@@ -583,38 +583,45 @@
   var pageInited = false;
   var tickers = [];
 
+  // Each section builds independently — a failure in one (a bad date, a
+  // missing element) must never blank the sections after it.
+  function safeRun(name, fn){
+    try{ fn(); } catch(e){ console.error('[keepsake] ' + name + ' failed:', e); }
+  }
+
   function initPage(){
     if(pageInited) return;
     pageInited = true;
-    setupCountdown();
-    buildGallery();
-    buildTimeline();
-    buildReasons();
-    buildLetters();
-    setupVault();
-    setupWishes();
-    setupNav();
-    setupReveals();
-    if(!reduceMotion) startAmbient(); else document.getElementById('ambient').remove();
+    safeRun('countdown', setupCountdown);
+    safeRun('gallery', buildGallery);
+    safeRun('timeline', buildTimeline);
+    safeRun('reasons', buildReasons);
+    safeRun('letters', buildLetters);
+    safeRun('vault', setupVault);
+    safeRun('wishes', setupWishes);
+    safeRun('nav', setupNav);
+    safeRun('reveals', setupReveals);
+    safeRun('ambient', function(){ if(!reduceMotion) startAmbient(); else document.getElementById('ambient').remove(); });
   }
 
-  /* ================= countdown (Africa/Cairo) — single source of truth ================= */
-  function zonedTimeToUtc(y,m,d,hh,mm,ss,timeZone){
-    var asUTC = new Date(Date.UTC(y,m,d,hh,mm,ss));
-    var tzStr = asUTC.toLocaleString('en-US',{timeZone:timeZone});
-    var utcStr = asUTC.toLocaleString('en-US',{timeZone:'UTC'});
-    var offset = new Date(utcStr).getTime() - new Date(tzStr).getTime();
-    return new Date(asUTC.getTime() + offset);
-  }
+  /* ================= countdown (Africa/Cairo, fixed UTC+2) ================= */
+  // Deliberately NOT using Intl/toLocaleString with an explicit timeZone here:
+  // privacy-hardened browsers (Brave's fingerprinting protection, notably)
+  // restrict timeZone-aware Intl calls to the viewer's own zone and throw a
+  // RangeError for any other zone — which previously took down the whole
+  // page (nothing after the throw ever ran). Egypt has used fixed UTC+2
+  // standard time since abandoning DST, so a plain offset is both accurate
+  // and can never throw.
+  var CAIRO_OFFSET_MS = 2 * 60 * 60 * 1000;
 
   var TARGET = null;
 
   function nextBirthday(){
     var now = new Date();
     var y = now.getUTCFullYear();
-    var target = zonedTimeToUtc(y,9,22,0,0,0,'Africa/Cairo');
+    var target = new Date(Date.UTC(y,9,22,0,0,0) - CAIRO_OFFSET_MS);
     if(target.getTime() < now.getTime()){
-      target = zonedTimeToUtc(y+1,9,22,0,0,0,'Africa/Cairo');
+      target = new Date(Date.UTC(y+1,9,22,0,0,0) - CAIRO_OFFSET_MS);
     }
     return target;
   }
