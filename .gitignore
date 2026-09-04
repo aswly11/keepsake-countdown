@@ -1,0 +1,15 @@
+# Original personal photos/videos stay on disk but out of git (large + already backed up on your devices).
+/*.jpg
+/*.jpeg
+/*.JPG
+/*.JPEG
+/*.png
+/*.PNG
+/*.heic
+/*.HEIC
+/*.mp4
+/*.MP4
+
+# OS junk
+Thumbs.db
+.DS_Store
