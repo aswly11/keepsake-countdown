@@ -4,15 +4,19 @@ A private birthday countdown + memory site for October 22. Single self-contained
 
 ## Open it
 
-Just open `dist/index.html` in a browser. To share it privately with relatives, publish it as a Claude Artifact (that's how the live link was created) or host the file anywhere that serves static HTML.
+Double-click `dist/index.html` (or open it from a browser's File > Open) — it's a complete, self-contained page, no server needed.
 
 ## Structure
 
-- `src/template.html` — the actual site (markup, CSS, JS). Edit this file for any content/design change.
+- `src/template.html` — the actual site (markup, CSS, JS). Edit this file for any content/design change. It's a *fragment* (no `<html>`/`<head>`/`<body>`) by design — see below.
 - `media/compressed/` — resized/compressed copies of the original photos (checked into git; the originals in the parent folder are not).
 - `media/video/` — the video clip, as-is.
 - `scripts/resize.ps1` — regenerates `media/compressed/` from the original photos one folder up. Only needed if you add new photos.
-- `scripts/build.js` — inlines everything in `media/` as base64 into `src/template.html`, producing `dist/index.html`. Run with `node build.js` from inside `scripts/`.
+- `scripts/build.js` — inlines everything in `media/` as base64 into `src/template.html`, producing two files in `dist/`:
+  - `dist/index.html` — a complete standalone HTML document (`<!doctype>`, `<head>` with a viewport tag, etc). **This is the one to open locally or host anywhere.**
+  - `dist/artifact-fragment.html` — the raw fragment, for publishing through the Claude Artifact tool (which wraps fragments in its own document shell — publishing the standalone file there would double-wrap it).
+
+  Run with `node build.js` from inside `scripts/`.
 
 ## To change things
 
@@ -25,7 +29,7 @@ Just open `dist/index.html` in a browser. To share it privately with relatives, 
   cd scripts
   node build.js
   ```
-  then re-publish `dist/index.html` to update the live link.
+  then re-publish `dist/artifact-fragment.html` to update the live link.
 
 ## Known limitations
 

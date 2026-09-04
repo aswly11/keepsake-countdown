@@ -8,7 +8,12 @@ const root = path.join(__dirname, '..');
 const compressedDir = path.join(root, 'media', 'compressed');
 const videoDir = path.join(root, 'media', 'video');
 const templatePath = path.join(root, 'src', 'template.html');
-const outPath = path.join(root, 'dist', 'index.html');
+// dist/index.html — a complete standalone document, for opening the file
+// directly or hosting it anywhere. dist/artifact-fragment.html — the raw
+// fragment (no <html>/<head>/<body>), for publishing via the Claude Artifact
+// tool, which wraps fragments in its own document skeleton automatically.
+const standaloneOutPath = path.join(root, 'dist', 'index.html');
+const fragmentOutPath = path.join(root, 'dist', 'artifact-fragment.html');
 
 const genericCaptions = [
   "Just us, being us.",
@@ -99,8 +104,27 @@ function inject(marker, jsonValue) {
 inject('/*__MEDIA_ITEMS_JSON__*/', mediaItems);
 inject('/*__TIMELINE_JSON__*/', timeline);
 
-fs.mkdirSync(path.dirname(outPath), { recursive: true });
-fs.writeFileSync(outPath, html, 'utf8');
+// pull the <title> out so it can sit in a real <head> for the standalone doc
+const titleMatch = html.match(/<title>([\s\S]*?)<\/title>/i);
+const title = titleMatch ? titleMatch[1] : "Aliaa's Keepsake Box";
+const fragmentBody = titleMatch ? html.slice(titleMatch[0].length) : html;
 
-const sizeMB = (Buffer.byteLength(html, 'utf8') / (1024 * 1024)).toFixed(2);
-console.log(`Wrote ${outPath} — ${sizeMB} MB, ${mediaItems.length} media items, ${timeline.length} timeline months`);
+const standaloneHtml = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${title}</title>
+</head>
+<body>
+${fragmentBody}
+</body>
+</html>
+`;
+
+fs.mkdirSync(path.dirname(standaloneOutPath), { recursive: true });
+fs.writeFileSync(fragmentOutPath, html, 'utf8');
+fs.writeFileSync(standaloneOutPath, standaloneHtml, 'utf8');
+
+const sizeMB = (Buffer.byteLength(standaloneHtml, 'utf8') / (1024 * 1024)).toFixed(2);
+console.log(`Wrote ${standaloneOutPath} (standalone) and ${fragmentOutPath} (for Artifact publish) — ${sizeMB} MB, ${mediaItems.length} media items, ${timeline.length} timeline months`);
