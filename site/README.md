@@ -12,9 +12,10 @@ Double-click `dist/index.html` (or open it from a browser's File > Open) — it'
 - `media/compressed/` — resized/compressed copies of the original photos (checked into git; the originals in the parent folder are not).
 - `media/video/` — the video clip, as-is.
 - `scripts/resize.ps1` — regenerates `media/compressed/` from the original photos one folder up. Only needed if you add new photos.
-- `scripts/build.js` — inlines everything in `media/` as base64 into `src/template.html`, producing two files in `dist/`:
-  - `dist/index.html` — a complete standalone HTML document (`<!doctype>`, `<head>` with a viewport tag, etc). **This is the one to open locally or host anywhere.**
-  - `dist/artifact-fragment.html` — the raw fragment, for publishing through the Claude Artifact tool (which wraps fragments in its own document shell — publishing the standalone file there would double-wrap it).
+- `scripts/build.js` — inlines everything in `media/` as base64 into `src/template.html`, producing three copies of the built page:
+  - `site/dist/index.html` — a complete standalone HTML document. Open this one locally.
+  - `site/dist/artifact-fragment.html` — the raw fragment, for publishing through the Claude Artifact tool (which wraps fragments in its own document shell — publishing the standalone file there would double-wrap it).
+  - `docs/index.html` (repo root) — same as `dist/index.html`, kept here so GitHub Pages can serve it (Pages only serves from a repo's root or its `/docs` folder).
 
   Run with `node build.js` from inside `scripts/`.
 
@@ -29,9 +30,10 @@ Double-click `dist/index.html` (or open it from a browser's File > Open) — it'
   cd scripts
   node build.js
   ```
-  then re-publish `dist/artifact-fragment.html` to update the live link.
+  then push to `main` (the GitHub Pages site auto-updates from `docs/`) and/or re-publish `dist/artifact-fragment.html` to update the Claude Artifact link.
 
 ## Known limitations
 
 - The "family word" gate is a friendly speed bump, not real security — there's no way to verify an actual phone number or email for a static page like this. Real privacy comes from only sharing the link with people you trust.
+- This repo is **public** (GitHub Pages' free tier only serves Pages from public repos), so the photos and letter text are technically discoverable via GitHub itself, not just via the site link — same content the gate already relied on client-side obscurity for, just also reachable through the repo browser now.
 - `IMG_6040.HEIC` from the original folder isn't included — this machine's photo codec could read its metadata but not decode the actual pixels (missing HEVC codec). Convert it to JPEG on a phone and drop it into the parent folder, then re-run `resize.ps1` and `build.js`, to add it.

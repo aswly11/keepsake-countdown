@@ -126,5 +126,10 @@ fs.mkdirSync(path.dirname(standaloneOutPath), { recursive: true });
 fs.writeFileSync(fragmentOutPath, html, 'utf8');
 fs.writeFileSync(standaloneOutPath, standaloneHtml, 'utf8');
 
+// keep the GitHub Pages copy (repo-root docs/index.html) in sync too
+const pagesOutPath = path.join(root, '..', 'docs', 'index.html');
+fs.mkdirSync(path.dirname(pagesOutPath), { recursive: true });
+fs.writeFileSync(pagesOutPath, standaloneHtml, 'utf8');
+
 const sizeMB = (Buffer.byteLength(standaloneHtml, 'utf8') / (1024 * 1024)).toFixed(2);
-console.log(`Wrote ${standaloneOutPath} (standalone) and ${fragmentOutPath} (for Artifact publish) — ${sizeMB} MB, ${mediaItems.length} media items, ${timeline.length} timeline months`);
+console.log(`Wrote ${standaloneOutPath}, ${pagesOutPath} (GitHub Pages), and ${fragmentOutPath} (for Artifact publish) — ${sizeMB} MB, ${mediaItems.length} media items, ${timeline.length} timeline months`);
