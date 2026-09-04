@@ -560,7 +560,17 @@
     if(localStorage.getItem('aliaa_kb_unlocked') === '1'){
       gate.hidden = true;
       main.hidden = false;
-      initPage();
+      // Deferred, not called directly: this runs while the script is still
+      // executing its first pass top-to-bottom, before later `var`
+      // statements (tickers, MEDIA, LETTERS, CAIRO_OFFSET_MS, ...) have
+      // actually been assigned — only their hoisted `undefined` exists yet.
+      // Calling initPage() straight from here used to fail silently on
+      // every returning visit (everything past the countdown depends on
+      // those variables) while working fine on a fresh unlock, since that
+      // one fires later, from a click, well after the whole script has
+      // finished its first pass. setTimeout pushes this to the next tick,
+      // by which point the rest of the script has already run.
+      setTimeout(initPage, 0);
     }
   }catch(e){}
 
