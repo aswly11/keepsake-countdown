@@ -136,7 +136,7 @@
     font-family:'Manrope',sans-serif; font-size:15px;
   }
   .gate-form input::placeholder{color:var(--ink-soft); opacity:.75;}
-  .gate-form input:focus-visible, button:focus-visible, .envelope:focus-visible, .polaroid:focus-visible, .flip-card:focus-visible{
+  .gate-form input:focus-visible, button:focus-visible, .envelope:focus-visible, .polaroid:focus-visible{
     outline:2px solid var(--rose); outline-offset:2px;
   }
   .gate-submit{
@@ -312,27 +312,6 @@
     .tl-row:nth-child(odd) .tl-card, .tl-row:nth-child(even) .tl-card{grid-column:2; justify-self:start; text-align:left; flex-direction:row;}
   }
 
-  /* ---------- reasons ---------- */
-  #reasons{background:var(--panel-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
-  .reasons-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:16px;}
-  .flip-card{
-    perspective:900px; aspect-ratio:3/4; background:none; border:none; padding:0;
-    transition:opacity .5s ease, transform .5s ease;
-  }
-  .flip-card.pre-anim{opacity:0; transform:translateY(18px) scale(.95);}
-  .flip-card.in-view{opacity:1; transform:translateY(0) scale(1);}
-  .flip-inner{position:relative; width:100%; height:100%; transition:transform .6s cubic-bezier(.3,.7,.2,1); transform-style:preserve-3d;}
-  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
-  .flip-face{
-    position:absolute; inset:0; backface-visibility:hidden; border-radius:8px;
-    display:flex; align-items:center; justify-content:center; padding:14px;
-    border:1px solid var(--line); box-shadow:0 12px 24px -16px var(--shadow);
-  }
-  .flip-front{background:var(--panel); flex-direction:column; gap:6px;}
-  .flip-front .fn{font-family:'Space Mono',monospace; font-size:26px; color:var(--gold-strong); font-weight:700;}
-  .flip-front .fl{font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft);}
-  .flip-back{background:var(--rose); color:#fff; transform:rotateY(180deg); font-size:13px; line-height:1.5; text-align:center; font-family:'Fraunces',serif; font-weight:500;}
-
   /* ---------- letters ---------- */
   .envelopes{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:28px;}
   .envelope{
@@ -431,7 +410,6 @@
   <div class="nav-links">
     <a href="#memories" data-sec="memories">Memories</a>
     <a href="#timeline" data-sec="timeline">Timeline</a>
-    <a href="#reasons" data-sec="reasons">Reasons</a>
     <a href="#letters" data-sec="letters">Letters</a>
     <a href="#vault" data-sec="vault">The 22nd</a>
     <a href="#wishes" data-sec="wishes">Wishes</a>
@@ -469,15 +447,6 @@
       <p>Built straight from the dates on these photos, month by month.</p>
     </div>
     <div class="timeline" id="timeline-track"></div>
-  </section>
-
-  <section id="reasons">
-    <div class="sec-head reveal">
-      <div class="eyebrow">One for every year</div>
-      <h2>28 reasons, for 28 years</h2>
-      <p>Flip each card &mdash; some are silly, some aren't, all of them are true.</p>
-    </div>
-    <div class="reasons-grid" id="reasons-grid"></div>
   </section>
 
   <section id="letters">
@@ -611,7 +580,6 @@
     safeRun('countdown', setupCountdown);
     safeRun('gallery', buildGallery);
     safeRun('timeline', buildTimeline);
-    safeRun('reasons', buildReasons);
     safeRun('letters', buildLetters);
     safeRun('vault', setupVault);
     safeRun('wishes', setupWishes);
@@ -840,58 +808,6 @@
     if(ev.key === 'ArrowRight') document.getElementById('lb-next').click();
   });
 
-  /* ================= 28 reasons ================= */
-  var REASONS = [
-    "Because you laugh at your own jokes before you finish telling them.",
-    "Because you always order dessert and never regret it.",
-    "Because your voice notes run three minutes too long — and I listen to every second.",
-    "Because you remember details about people I've already forgotten.",
-    "Because you dance in the kitchen when you think no one's watching.",
-    "Because you give the best advice and never once say \"I told you so.\"",
-    "Because you make ordinary Tuesdays feel worth showing up for.",
-    "Because you still get excited about the moon.",
-    "Because you never let me walk away from a conversation angry.",
-    "Because you say exactly what you mean, even when it's inconvenient.",
-    "Because your hugs fix more than they should be able to.",
-    "Because you cry at the same three movies every single time.",
-    "Because you're the most stubborn person I know, in the best way.",
-    "Because you make friends with strangers in five minutes flat.",
-    "Because you know when something's wrong before I say a word.",
-    "Because you send me pictures of your food before you eat it.",
-    "Because you fight for the people you love, loudly if you have to.",
-    "Because you still get shy when I compliment you.",
-    "Because your handwriting is a disaster and somehow that's endearing too.",
-    "Because you make plans a year out like they're already happening.",
-    "Because you never let a birthday, yours or anyone else's, go unnoticed.",
-    "Because you're the reason I check my phone smiling.",
-    "Because you argue with the TV like it can hear you.",
-    "Because you make being loved look easy, even when love isn't.",
-    "Because twenty-eight years in, you're still becoming exactly who you want to be.",
-    "Because every year with you gets better than the one before it.",
-    "Because you turned a bunch of ordinary days into a life I actually look forward to.",
-    "Because it's you. It's always going to be you."
-  ];
-
-  function buildReasons(){
-    var grid = document.getElementById('reasons-grid');
-    var frag = document.createDocumentFragment();
-    REASONS.forEach(function(text, i){
-      var card = document.createElement('button');
-      card.className = 'flip-card';
-      card.setAttribute('aria-label', 'Reason ' + (i+1) + ' of 28');
-      card.innerHTML =
-        '<div class="flip-inner">' +
-          '<div class="flip-face flip-front"><span class="fn mono">' + pad(i+1) + '</span><span class="fl">Reason</span></div>' +
-          '<div class="flip-face flip-back">' + text + '</div>' +
-        '</div>';
-      card.addEventListener('click', function(){ card.classList.toggle('flipped'); });
-      frag.appendChild(card);
-    });
-    grid.appendChild(frag);
-
-    observeReveal(grid.querySelectorAll('.flip-card'), 0.12);
-  }
-
   /* ================= letters ================= */
   var LETTERS = [
     {
@@ -990,7 +906,7 @@
   });
 
   /* ================= vault (auto-unlocks on the 22nd) ================= */
-  var VAULT_LETTER = "There's nothing left to wait for now — it's your day.\n\nHappy birthday, Aliaa. Twenty-eight looks good on you already. Every photo above, every silly reason, every letter — they were all just a long way of saying the same thing: I hope today hands you every good thing you deserve, and I'm endlessly glad I get to love you through all the years still coming.";
+  var VAULT_LETTER = "There's nothing left to wait for now — it's your day.\n\nHappy birthday, Aliaa. Twenty-eight looks good on you already. Every photo above, every letter — they were all just a long way of saying the same thing: I hope today hands you every good thing you deserve, and I'm endlessly glad I get to love you through all the years still coming.";
 
   function setupVault(){
     var box = document.getElementById('vault-box');

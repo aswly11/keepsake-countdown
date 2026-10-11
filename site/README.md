@@ -23,7 +23,6 @@ Double-click `dist/index.html` (or open it from a browser's File > Open) — it'
 
 - **Family PIN**: search for `FAMILY_PIN` near the top of the `<script>` in `src/template.html`. It's currently `221098` (22-10-98).
 - **Letters**: the `LETTERS` array in the same file — each is `{ title, body }`.
-- **28 Reasons**: the `REASONS` array — plain strings, edit freely (some are guesses about her habits — fix anything that isn't true!).
 - **Wishes email**: hardcoded to `aswly98@gmail.com` in `setupWishes()`.
 - After any edit to `src/template.html`, `media/`, or new photos, re-run:
   ```
