@@ -30,6 +30,15 @@ const genericCaptions = [
   "You make ordinary days feel like this.",
 ];
 
+// Undated photos that get a fixed spot and their own caption instead of a
+// generic one. They open the board in the order listed here (oldest first)
+// and stay out of the timeline.
+const pinnedFirst = [
+  { file: '819e2223-0910-4897-bf84-58cc72c95e4b.jpg', caption: "Where your story begins." },
+  { file: '549ab911-0665-422d-83b4-79c37554ce84.jpg', caption: "Tiny you, taking it all in." },
+  { file: 'ae74627a-ced9-4c45-8cd3-de150aa6f326.jpg', caption: "Little you, big smile." },
+];
+
 function extractDate(name) {
   let m = name.match(/(\d{4})-(\d{2})-(\d{2})/);
   if (m) return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
@@ -49,11 +58,21 @@ const files = fs.readdirSync(compressedDir).filter(f => f.toLowerCase().endsWith
 
 const items = files.map(f => {
   const full = path.join(compressedDir, f);
-  const date = extractDate(f);
-  return { file: f, full, date };
+  const pin = pinnedFirst.findIndex(p => p.file === f);
+  const date = pin === -1 ? extractDate(f) : null;
+  return { file: f, full, date, pin };
+});
+
+pinnedFirst.forEach(p => {
+  if (!files.includes(p.file)) console.warn('Pinned photo not found in media/compressed:', p.file);
 });
 
 items.sort((a, b) => {
+  if (a.pin !== -1 || b.pin !== -1) {
+    if (a.pin === -1) return 1;
+    if (b.pin === -1) return -1;
+    return a.pin - b.pin;
+  }
   if (a.date && b.date) return a.date - b.date;
   if (a.date) return -1;
   if (b.date) return 1;
@@ -64,7 +83,9 @@ let capIdx = 0;
 const mediaItems = items.map(it => {
   const buf = fs.readFileSync(it.full);
   const b64 = buf.toString('base64');
-  const caption = it.date ? formatMonth(it.date) : genericCaptions[capIdx++ % genericCaptions.length];
+  const caption = it.pin !== -1 ? pinnedFirst[it.pin].caption
+    : it.date ? formatMonth(it.date)
+    : genericCaptions[capIdx++ % genericCaptions.length];
   return { type: 'image', src: `data:image/jpeg;base64,${b64}`, caption, dateKey: it.date ? it.date.toISOString().slice(0, 7) : null };
 });
 

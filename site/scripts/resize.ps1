@@ -1,5 +1,7 @@
 # Resizes/compresses the original photos from the project root into site/media/compressed.
 # Re-run this only if you add new original photos to the root folder.
+# Pass -Only "a.jpg","b.jpg" to process just those files and leave the rest alone.
+param([string[]]$Only)
 Add-Type -AssemblyName System.Drawing
 
 $srcDir = Join-Path $PSScriptRoot "..\..\"
@@ -14,6 +16,7 @@ $encParams = New-Object System.Drawing.Imaging.EncoderParameters(1)
 $encParams.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter([System.Drawing.Imaging.Encoder]::Quality, $quality)
 
 $files = Get-ChildItem -Path $srcDir -File | Where-Object { $_.Extension -match '\.(jpg|jpeg)$' }
+if ($Only) { $files = $files | Where-Object { $Only -contains $_.Name } }
 
 $results = @()
 
