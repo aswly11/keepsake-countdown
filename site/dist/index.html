@@ -358,6 +358,35 @@
   .vault-btn:not(:disabled):hover{background:var(--gold); color:var(--panel);}
   .vault-unlocked .vault-body{font-size:15.5px; line-height:1.85; white-space:pre-wrap; text-align:left; margin-top:12px;}
 
+  /* ---------- surprise (appears on the 22nd) ---------- */
+  #surprise{text-align:center;}
+  .gift{
+    position:relative; display:block; width:176px; height:160px; margin:0 auto; padding:0;
+    background:none; border:none; transition:transform .25s ease;
+  }
+  .gift:hover{transform:translateY(-4px) rotate(-1.5deg);}
+  .gift-box{
+    position:absolute; left:12px; right:12px; bottom:0; height:104px; border-radius:0 0 6px 6px;
+    background:var(--rose); box-shadow:0 24px 36px -20px var(--shadow);
+  }
+  .gift-lid{
+    position:absolute; left:0; right:0; top:26px; height:34px; border-radius:5px; z-index:2;
+    background:color-mix(in srgb, var(--rose) 80%, black);
+    transition:transform .5s cubic-bezier(.3,.7,.2,1), opacity .35s ease .15s;
+  }
+  .gift-box::before, .gift-lid::before{content:""; position:absolute; top:0; bottom:0; left:50%; width:24px; margin-left:-12px; background:var(--gold);}
+  .gift-bow::before, .gift-bow::after{content:""; position:absolute; bottom:100%; width:34px; height:26px; border:7px solid var(--gold);}
+  .gift-bow::before{right:50%; border-radius:50% 50% 0 50%; transform:rotate(12deg); transform-origin:bottom right;}
+  .gift-bow::after{left:50%; border-radius:50% 50% 50% 0; transform:rotate(-12deg); transform-origin:bottom left;}
+  .gift.open .gift-lid{transform:translateY(-52px) rotate(-12deg); opacity:0;}
+  .gift-hint{margin-top:18px; font-family:'Space Mono',monospace; font-size:12.5px; color:var(--ink-soft);}
+  .surprise-note{
+    max-width:520px; margin:0 auto; background:var(--panel); border:1px solid var(--line); border-radius:8px;
+    padding:40px 32px; box-shadow:0 24px 50px -24px var(--shadow); text-align:left;
+  }
+  .surprise-note h3{font-size:22px; margin-bottom:14px;}
+  .surprise-body{font-size:15.5px; line-height:1.85; color:var(--ink); white-space:pre-wrap;}
+
   /* ---------- wishes ---------- */
   #wishes{background:var(--panel-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
   .postcard{
@@ -408,6 +437,7 @@
   <div class="nav-brand"><span class="heart">&#9825;</span><span class="full">Aliaa's Keepsake Box</span></div>
   <div class="nav-count mono" id="nav-count">--d --h --m --s</div>
   <div class="nav-links">
+    <a href="#surprise" data-sec="surprise" id="nav-surprise" hidden>Surprise</a>
     <a href="#memories" data-sec="memories">Memories</a>
     <a href="#timeline" data-sec="timeline">Timeline</a>
     <a href="#letters" data-sec="letters">Letters</a>
@@ -429,6 +459,26 @@
       <div class="ticket-seg"><span class="num mono" id="cd-secs">00</span><span class="lbl">Seconds</span></div>
     </div>
     <p class="sub" id="hero-sub">Every one of those seconds is bringing us closer to celebrating you &mdash; scroll on, there's a lot more waiting below.</p>
+  </section>
+
+  <section id="surprise" hidden>
+    <div class="sec-head reveal">
+      <div class="eyebrow">Saved for the 22nd</div>
+      <h2>Something that waited for your birthday</h2>
+      <p>This part of the box stayed hidden until the 22nd. Go on &mdash; open it.</p>
+    </div>
+    <div id="gift-wrap">
+      <button class="gift" id="gift" aria-label="Open your birthday surprise">
+        <span class="gift-box"></span>
+        <span class="gift-lid"><span class="gift-bow"></span></span>
+      </button>
+      <div class="gift-hint">Tap to open</div>
+    </div>
+    <div class="surprise-note" id="surprise-note" hidden>
+      <h3 id="surprise-title"></h3>
+      <div class="surprise-body" id="surprise-body"></div>
+      <div class="letter-sign">&mdash; Always, Ahmed</div>
+    </div>
   </section>
 
   <section id="memories">
@@ -582,6 +632,7 @@
     safeRun('timeline', buildTimeline);
     safeRun('letters', buildLetters);
     safeRun('vault', setupVault);
+    safeRun('surprise', setupSurprise);
     safeRun('wishes', setupWishes);
     safeRun('nav', setupNav);
     safeRun('reveals', setupReveals);
@@ -597,6 +648,9 @@
   // standard time since abandoning DST, so a plain offset is both accurate
   // and can never throw.
   var CAIRO_OFFSET_MS = 2 * 60 * 60 * 1000;
+  var DAY_MS = 24 * 60 * 60 * 1000;
+  // the birthday version of the page stays up from the 22nd through the 28th
+  var BIRTHDAY_MODE_DAYS = 7;
 
   var TARGET = null;
 
@@ -604,14 +658,18 @@
     var now = new Date();
     var y = now.getUTCFullYear();
     var target = new Date(Date.UTC(y,9,22,0,0,0) - CAIRO_OFFSET_MS);
-    if(target.getTime() < now.getTime()){
+    // Only roll over to next year once the birthday week has fully passed.
+    // Rolling over the moment the 22nd starts meant anyone opening the page
+    // on the day itself got a 364-day countdown to the next one instead.
+    if(target.getTime() + BIRTHDAY_MODE_DAYS * DAY_MS <= now.getTime()){
       target = new Date(Date.UTC(y+1,9,22,0,0,0) - CAIRO_OFFSET_MS);
     }
     return target;
   }
 
+  // done: the birthday has arrived; today: it is still the 22nd in Cairo
   function parts(diff){
-    if(diff <= 0) return {d:0,h:0,m:0,s:0,done:true};
+    if(diff <= 0) return {d:0,h:0,m:0,s:0,done:true,today:diff > -DAY_MS};
     var s = Math.floor(diff/1000);
     var d = Math.floor(s/86400); s-=d*86400;
     var h = Math.floor(s/3600); s-=h*3600;
@@ -635,7 +693,9 @@
     registerTicker(function(p){
       if(p.done){
         dEl.textContent='00'; hEl.textContent='00'; mEl.textContent='00'; sEl.textContent='00';
-        document.getElementById('hero-sub').textContent = "It's the 22nd — happiest birthday, Aliaa!";
+        document.getElementById('hero-sub').textContent = p.today
+          ? "It's the 22nd — happiest birthday, Aliaa!"
+          : "Still celebrating you — happiest birthday, Aliaa!";
         return;
       }
       dEl.textContent = pad(p.d); hEl.textContent = pad(p.h); mEl.textContent = pad(p.m); sEl.textContent = pad(p.s);
@@ -645,7 +705,7 @@
     });
 
     registerTicker(function(p){
-      navEl.textContent = p.done ? "It's today! ❤" : (p.d + 'd ' + pad(p.h) + 'h ' + pad(p.m) + 'm ' + pad(p.s) + 's');
+      navEl.textContent = p.done ? (p.today ? "It's today! ❤" : "Happy birthday! ❤") : (p.d + 'd ' + pad(p.h) + 'h ' + pad(p.m) + 'm ' + pad(p.s) + 's');
     });
 
     function loop(){
@@ -864,15 +924,16 @@
   var letterOverlay = document.getElementById('letter-overlay');
   var letterTitle = document.getElementById('letter-title');
   var letterBody = document.getElementById('letter-body');
-  var typeTimer = null;
 
   function openLetter(letter){
     letterTitle.textContent = letter.title;
     letterOverlay.classList.add('open');
     typeText(letterBody, letter.body);
   }
+  // The timer lives on the target, so the letter overlay and the vault each
+  // type independently — opening an envelope must not cut the vault letter off.
   function typeText(target, text){
-    clearTimeout(typeTimer);
+    clearTimeout(target.typeTimer);
     target.innerHTML = '';
     if(reduceMotion){ target.textContent = text; return; }
     var i = 0;
@@ -887,7 +948,7 @@
         i++;
         var ch = text.charAt(i-1);
         var delay = ch === '.' || ch === '\n' ? 90 : 16;
-        typeTimer = setTimeout(step, delay);
+        target.typeTimer = setTimeout(step, delay);
       } else {
         cursor.remove();
       }
@@ -896,7 +957,7 @@
   }
   function closeLetter(){
     letterOverlay.classList.remove('open');
-    clearTimeout(typeTimer);
+    clearTimeout(letterBody.typeTimer);
     document.querySelectorAll('.envelope.open').forEach(function(e){ e.classList.remove('open'); });
   }
   document.getElementById('letter-close').addEventListener('click', closeLetter);
@@ -933,6 +994,43 @@
         '<div>' + pad(p.h) + '<span>hrs</span></div>' +
         '<div>' + pad(p.m) + '<span>min</span></div>' +
         '<div>' + pad(p.s) + '<span>sec</span></div>';
+    });
+  }
+
+  /* ================= birthday surprise (hidden until the 22nd) ================= */
+  // What she finds inside the gift. The section and its nav link stay hidden
+  // until the birthday arrives, and this text is only put on the page once
+  // she opens the box.
+  var SURPRISE = {
+    title: "Happy birthday, Aliaa",
+    body: "I kept this part hidden until the day itself, so there'd be one thing in here you couldn't peek at early.\n\nHappy twenty-eighth. Today is yours, start to finish, and I'm so glad I get to celebrate you.\n\nOne more thing: the last letter at the bottom of this page has unlocked too. Go read it."
+  };
+
+  function setupSurprise(){
+    var section = document.getElementById('surprise');
+    var gift = document.getElementById('gift');
+    var shown = false;
+
+    registerTicker(function(p){
+      if(!p.done || shown) return;
+      shown = true;
+      section.hidden = false;
+      document.getElementById('nav-surprise').hidden = false;
+    });
+
+    gift.addEventListener('click', function(){
+      if(gift.classList.contains('open')) return;
+      gift.classList.add('open');
+      if(!reduceMotion){
+        var r = gift.getBoundingClientRect();
+        burstConfetti(r.left + r.width/2, r.top + r.height/2);
+      }
+      setTimeout(function(){
+        document.getElementById('surprise-title').textContent = SURPRISE.title;
+        document.getElementById('surprise-body').textContent = SURPRISE.body;
+        document.getElementById('gift-wrap').hidden = true;
+        document.getElementById('surprise-note').hidden = false;
+      }, reduceMotion ? 0 : 520);
     });
   }
 

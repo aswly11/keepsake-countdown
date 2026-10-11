@@ -12,17 +12,26 @@ Double-click `dist/index.html` (or open it from a browser's File > Open) — it'
 - `media/compressed/` — resized/compressed copies of the original photos (checked into git; the originals in the parent folder are not).
 - `media/video/` — the video clip, as-is.
 - `scripts/resize.ps1` — regenerates `media/compressed/` from the original photos one folder up. Only needed if you add new photos.
-- `scripts/build.js` — inlines everything in `media/` as base64 into `src/template.html`, producing three copies of the built page:
+- `scripts/build.js` — inlines everything in `media/` as base64 into `src/template.html`, producing these copies of the built page:
   - `site/dist/index.html` — a complete standalone HTML document. Open this one locally.
   - `site/dist/artifact-fragment.html` — the raw fragment, for publishing through the Claude Artifact tool (which wraps fragments in its own document shell — publishing the standalone file there would double-wrap it).
   - `docs/index.html` (repo root) — same as `dist/index.html`, kept here so GitHub Pages can serve it (Pages only serves from a repo's root or its `/docs` folder).
+  - `site/dist/preview-birthday.html` — a local-only copy whose clock is set to October 22, for checking the birthday version ahead of time. Git-ignored, never published.
 
   Run with `node build.js` from inside `scripts/`.
+
+## What happens on the 22nd
+
+At midnight on October 22 (Cairo time) the page switches to its birthday version: the countdown reads zero, the last letter unlocks, and a "Surprise" section with a gift box to open appears right under the countdown (plus a "Surprise" link in the nav). Before that, the section and its link are hidden. The birthday version stays up through October 28, then the page goes back to counting down to the next birthday.
+
+Open `dist/preview-birthday.html` to see it before the day.
 
 ## To change things
 
 - **Family PIN**: search for `FAMILY_PIN` near the top of the `<script>` in `src/template.html`. It's currently `221098` (22-10-98).
 - **Letters**: the `LETTERS` array in the same file — each is `{ title, body }`.
+- **Birthday surprise**: the `SURPRISE` object in the same file — `{ title, body }`, shown when the gift box is opened.
+- **How long the birthday version stays up**: `BIRTHDAY_MODE_DAYS` in the same file (7 = the 22nd through the 28th).
 - **Wishes email**: hardcoded to `aswly98@gmail.com` in `setupWishes()`.
 - After any edit to `src/template.html`, `media/`, or new photos, re-run:
   ```

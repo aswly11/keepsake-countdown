@@ -152,5 +152,20 @@ const pagesOutPath = path.join(root, '..', 'docs', 'index.html');
 fs.mkdirSync(path.dirname(pagesOutPath), { recursive: true });
 fs.writeFileSync(pagesOutPath, standaloneHtml, 'utf8');
 
+// dist/preview-birthday.html — a local-only copy for checking the birthday
+// version ahead of time: the same page, but its clock starts at 9am Cairo
+// time on the coming October 22. Git-ignored, so it never gets published.
+const previewOutPath = path.join(root, 'dist', 'preview-birthday.html');
+const buildTime = Date.now();
+let previewAt = Date.UTC(new Date(buildTime).getUTCFullYear(), 9, 22, 7);
+if (previewAt < buildTime) previewAt = Date.UTC(new Date(buildTime).getUTCFullYear() + 1, 9, 22, 7);
+const previewClock = `<script>(function(){var R=Date,off=${previewAt}-R.now();window.Date=class extends R{constructor(){if(arguments.length===0){super(R.now()+off)}else{super(...arguments)}}static now(){return R.now()+off}};})();</script>`;
+const previewBanner = '<div style="position:fixed;left:0;right:0;bottom:0;z-index:999;padding:8px 12px;background:#2c1a30;color:#fffaf2;font:13px/1.4 system-ui,sans-serif;text-align:center">Preview only — this is how the page will look on October 22</div>';
+const previewHtml = standaloneHtml
+  .replace('</head>', () => previewClock + '\n</head>')
+  .replace('<body>', () => '<body>\n' + previewBanner);
+fs.writeFileSync(previewOutPath, previewHtml, 'utf8');
+
 const sizeMB = (Buffer.byteLength(standaloneHtml, 'utf8') / (1024 * 1024)).toFixed(2);
 console.log(`Wrote ${standaloneOutPath}, ${pagesOutPath} (GitHub Pages), and ${fragmentOutPath} (for Artifact publish) — ${sizeMB} MB, ${mediaItems.length} media items, ${timeline.length} timeline months`);
+console.log(`Wrote ${previewOutPath} (local birthday preview, not published)`);
