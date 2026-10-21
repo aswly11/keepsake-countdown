@@ -271,6 +271,12 @@
      Its emoji come from Noto Color Emoji, since older systems (Windows 10)
      have no 🫶 of their own and would show empty boxes */
   .letter[lang="en"] p{font-family:'Fraunces','Noto Color Emoji',ui-serif,Georgia,serif;}
+  .letter[lang="ar"] p{font-family:'Amiri','Noto Color Emoji',ui-serif,Georgia,serif;}
+  /* a long note (Heba's): smaller, and its paragraphs set right-aligned like
+     a written letter rather than centered */
+  .letter.long{font-size:clamp(17px,3.4vw,19px);}
+  .letter.long p{text-align:start;}
+  .letter.long .sign{text-align:center;}
   .letter .sign{margin-top:6px; font-style:italic; color:var(--ink-soft);}
   /* wide enough for the halves side by side, the way a couplet is printed.
      From 930px each column fits the longest half (فقُمْ واصنعِ الشايَ…, about
@@ -647,6 +653,30 @@
         <p class="sign">— Hoda</p>
       </div>
     </div>
+    <div class="poem-wrap short reveal">
+      <div class="carousel" id="carousel-heba" role="group" aria-roledescription="carousel" aria-label="Aliaa and Heba" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem letter long" dir="rtl" lang="ar">
+        <h3>كل عام وإنتِ بخير يا لول</h3>
+        <p>كل عام وانت أقرب الناس لقلبي. ❤️</p>
+        <p>يمكن مش دايمًا بعرف أعبّرلك عن مكانتك عندي، بس إنتِ بالنسبالي أكبر من مجرد أخت، إنتِ جزء من عمري وذكرياتي، وشخص وجوده في حياتي له قيمة عمرها ما هتتغير. مهما اختلفنا أو انشغلنا في الحياة، هتفضلي دايمًا ليكي مكانة خاصة محدش يقدر ياخدها.</p>
+        <p>في يوم ميلادك، بتمنالك من كل قلبي إن السنين الجاية تكون أحنّ عليكي، وإنك توصلي لكل حاجة نفسك فيها، وتفضلي دايمًا مبسوطة ومرتاحة وسعيدة واشوفك احلى مامي.🥹 يا رب أشوفك دايمًا ناجحة وفخورة بنفسك، وأفضل جنبك في كل مراحل حياتك، أشاركك فرحتك وأكون سند ليكي وقت ما تحتاجيني.</p>
+        <p>كل عام وإنتِ نعمة كبيرة في حياتنا، وكل عام وإنتِ بخير وبألف خير. ربنا يحفظك لينا، ويديم المحبة اللي بينا، ويجمعنا دايمًا على أحلى الأيام والذكريات. بحبك يا لولي، وعقبال سنين كتير نفضل فيها مع بعض.</p>
+        <p class="sign" dir="ltr" lang="en">— Heba</p>
+      </div>
+    </div>
     <div class="corkboard" id="corkboard"></div>
   </section>
 
@@ -889,9 +919,10 @@
     setTimeout(type, HERO_LINE_PACE.start);
   }
 
-  /* ================= the notes (لولي ابنتي, Hoda's), typed out ================= */
-  // milliseconds per character, and the pause before each new line
-  var LETTER_PACE = {type:45, line:650};
+  /* ================= the notes (لولي ابنتي, Hoda's, Heba's), typed out ================= */
+  // milliseconds per character (faster for a long note), and the pause
+  // before each new line
+  var LETTER_PACE = {type:45, long:28, line:650};
 
   // Once a note (.letter) scrolls into view, its heading and then each line
   // type out in turn. The text is in the markup, so it's there in full
@@ -915,6 +946,7 @@
     });
     var cursor = document.createElement('span');
     cursor.className = 'cursor';
+    var speed = box.classList.contains('long') ? LETTER_PACE.long : LETTER_PACE.type;
 
     var n = 0, i = 0;
     function type(){
@@ -923,7 +955,7 @@
       i++;
       part.shown.textContent = part.chars.slice(0, i).join('');
       part.rest.textContent = part.chars.slice(i).join('');
-      if(i < part.chars.length){ setTimeout(type, LETTER_PACE.type); return; }
+      if(i < part.chars.length){ setTimeout(type, speed); return; }
       part.rest.remove();
       n++; i = 0;
       if(n < parts.length) setTimeout(type, LETTER_PACE.line);
@@ -1257,6 +1289,11 @@
     "carousel-hoda": [
       "WhatsApp_Image_2026-10-21_at_7_52_01_PM__1_.jpg",
       "WhatsApp_Image_2026-10-21_at_7_52_01_PM.jpg"
+    ],
+    // beside Heba's note (كل عام وإنتِ بخير يا لول)
+    "carousel-heba": [
+      "WhatsApp_Image_2026-10-21_at_8_35_12_PM.jpg",
+      "WhatsApp_Image_2026-10-21_at_8_32_27_PM.jpg"
     ]
   };
   // milliseconds each photo stays up before a carousel turns by itself
