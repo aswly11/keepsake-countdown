@@ -232,6 +232,14 @@
   .ticket-seg .num.tick{animation:tickpop .35s ease;}
   @keyframes tickpop{0%{transform:translateY(-6px); opacity:.4;} 100%{transform:translateY(0); opacity:1;}}
   .ticket-seg .lbl{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-top:6px; display:block;}
+  /* a photo behind a cell (set by JS from COUNTDOWN_PHOTOS), darkened by a
+     scrim so the white numbers stay readable over any photo */
+  .ticket-seg.has-photo{padding-top:34px; padding-bottom:30px; min-width:116px; background-size:cover; background-position:center;}
+  .ticket-seg.has-photo::before{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(28,14,32,.28), rgba(28,14,32,.72));}
+  .ticket-seg.has-photo .num, .ticket-seg.has-photo .lbl{position:relative;}
+  .ticket-seg.has-photo .num{color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.5);}
+  .ticket-seg.has-photo .lbl{color:rgba(255,255,255,.9);}
+  .ticket-seg.has-photo + .ticket-seg{border-left-color:rgba(255,255,255,.4);}
   #hero .sub{font-size:15.5px; max-width:44ch;}
   /* the line under the countdown, typed out. The untyped rest keeps its place
      (invisibly) so words appear where they end up and nothing below moves. The
@@ -385,6 +393,7 @@
     section{padding:72px 18px;}
     .ticket{flex-wrap:wrap; justify-content:center;}
     .ticket-seg{min-width:72px; padding:16px 14px;}
+    .ticket-seg.has-photo{min-width:76px; padding:24px 14px 20px;}
   }
 </style>
 
@@ -695,6 +704,7 @@
     if(pageInited) return;
     pageInited = true;
     safeRun('countdown', setupCountdown);
+    safeRun('countdown photos', setupCountdownPhotos);
     safeRun('hero line', setupHeroLine);
     safeRun('story', setupStory);
     safeRun('poem', setupPoem);
@@ -779,6 +789,26 @@
       setTimeout(loop, 1000);
     }
     loop();
+  }
+
+  /* ================= photos behind the countdown ================= */
+  // The photos (files from media/compressed) behind the days, hours, minutes
+  // and seconds, in that order. A cell whose photo isn't found stays plain.
+  var COUNTDOWN_PHOTOS = [
+    "IMG-20241109-WA0117.jpg",
+    "photo_5780788018209212977_y.jpg",
+    "photo_5904292311066595718_y.jpg",
+    "WhatsApp_Image_2026-09-04_at_10_07_11_AM.jpg"
+  ];
+
+  function setupCountdownPhotos(){
+    var segs = document.querySelectorAll('.ticket-seg');
+    COUNTDOWN_PHOTOS.forEach(function(file, i){
+      var photo = MEDIA.filter(function(m){ return m.file === file; })[0];
+      if(!photo || !segs[i]) return;
+      segs[i].style.backgroundImage = 'url("' + photo.src + '")';
+      segs[i].classList.add('has-photo');
+    });
   }
 
   /* ================= the line under the countdown, typed out ================= */
