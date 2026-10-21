@@ -272,6 +272,8 @@
      have no 🫶 of their own and would show empty boxes */
   .letter[lang="en"] p{font-family:'Fraunces','Noto Color Emoji',ui-serif,Georgia,serif;}
   .letter[lang="ar"] p{font-family:'Amiri','Noto Color Emoji',ui-serif,Georgia,serif;}
+  /* an English heading (Najwa's) in the Latin serif; Hoda's Arabic one keeps Amiri */
+  .poem.letter[lang="en"] h3:not([lang="ar"]){font-family:'Fraunces',ui-serif,Georgia,serif; font-weight:600; font-size:clamp(26px,4.6vw,34px);}
   /* a long note (Heba's): smaller, and its paragraphs set right-aligned like
      a written letter rather than centered */
   .letter.long{font-size:clamp(17px,3.4vw,19px);}
@@ -677,6 +679,28 @@
         <p class="sign" dir="ltr" lang="en">— Heba</p>
       </div>
     </div>
+    <div class="poem-wrap short reveal" dir="rtl">
+      <div class="carousel" id="carousel-najwa" dir="ltr" lang="en" role="group" aria-roledescription="carousel" aria-label="Aliaa and Najwa" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem letter" dir="ltr" lang="en">
+        <h3>Happy birthday to my sister.</h3>
+        <p>The most precious jewel in our lives, happy birthday, and may all your days be filled with happiness.</p>
+        <p>Your birthday is that gives the beauty of this day.</p>
+        <p class="sign">— Najwa</p>
+      </div>
+    </div>
     <div class="corkboard" id="corkboard"></div>
   </section>
 
@@ -919,7 +943,7 @@
     setTimeout(type, HERO_LINE_PACE.start);
   }
 
-  /* ================= the notes (لولي ابنتي, Hoda's, Heba's), typed out ================= */
+  /* ================= the notes (لولي ابنتي, Hoda's, Heba's, Najwa's), typed out ================= */
   // milliseconds per character (faster for a long note), and the pause
   // before each new line
   var LETTER_PACE = {type:45, long:28, line:650};
@@ -1294,6 +1318,12 @@
     "carousel-heba": [
       "WhatsApp_Image_2026-10-21_at_8_35_12_PM.jpg",
       "WhatsApp_Image_2026-10-21_at_8_32_27_PM.jpg"
+    ],
+    // beside Najwa's note (Happy birthday to my sister.)
+    "carousel-najwa": [
+      "WhatsApp_Image_2026-10-21_at_8_54_12_PM.jpg",
+      "WhatsApp_Image_2026-10-21_at_8_54_16_PM.jpg",
+      "WhatsApp_Image_2026-10-21_at_8_54_12_PM__1_.jpg"
     ]
   };
   // milliseconds each photo stays up before a carousel turns by itself

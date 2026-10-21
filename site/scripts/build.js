@@ -69,6 +69,10 @@ const pinnedFirst = [
   // in the carousel beside Heba's note (كل عام وإنتِ بخير يا لول)
   { file: 'WhatsApp_Image_2026-10-21_at_8_35_12_PM.jpg', caption: "Strike pose." },
   { file: 'WhatsApp_Image_2026-10-21_at_8_32_27_PM.jpg', caption: "Mirror, mirror." },
+  // in the carousel beside Najwa's note (Happy birthday to my sister.)
+  { file: 'WhatsApp_Image_2026-10-21_at_8_54_12_PM.jpg', caption: "Golden hour in the park." },
+  { file: 'WhatsApp_Image_2026-10-21_at_8_54_16_PM.jpg', caption: "Pink and sunshine." },
+  { file: 'WhatsApp_Image_2026-10-21_at_8_54_12_PM__1_.jpg', caption: "One more for luck." },
 ];
 
 // Photos in media/compressed (and videos in media/video) that are left off the
