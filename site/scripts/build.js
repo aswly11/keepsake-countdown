@@ -66,9 +66,11 @@ const pinnedFirst = [
   // in the carousel beside Hoda's note (الملكة علياء)
   { file: 'WhatsApp_Image_2026-10-21_at_7_52_01_PM__1_.jpg', caption: "Matching in pink." },
   { file: 'WhatsApp_Image_2026-10-21_at_7_52_01_PM.jpg', caption: "Sisters, always." },
+  { file: 'IMG_0398.jpg', caption: "On the big day." },
   // in the carousel beside Heba's note (كل عام وإنتِ بخير يا لول)
   { file: 'WhatsApp_Image_2026-10-21_at_8_35_12_PM.jpg', caption: "Strike pose." },
   { file: 'WhatsApp_Image_2026-10-21_at_8_32_27_PM.jpg', caption: "Mirror, mirror." },
+  { file: 'IMG_0401.jpg', caption: "The tightest hug." },
   // in the carousel beside Najwa's note (Happy birthday to my sister.)
   { file: 'WhatsApp_Image_2026-10-21_at_8_54_12_PM.jpg', caption: "Golden hour in the park." },
   { file: 'WhatsApp_Image_2026-10-21_at_8_54_16_PM.jpg', caption: "Pink and sunshine." },
@@ -76,6 +78,10 @@ const pinnedFirst = [
   // in the carousel beside Mohamed's note (كل عام وانتي طيبه يا اجمل لولو)
   { file: 'IMG_0110.jpg', caption: "A big hug." },
   { file: 'IMG_0106.jpg', caption: "The happiest bride." },
+  // in the carousel beside إلى زوجتي علياء: signing the marriage contract
+  { file: 'IMG_0060.jpg', caption: "Signing it, smiling." },
+  { file: 'IMG_0070.jpg', caption: "Making it official." },
+  { file: 'IMG_0058.jpg', caption: "Husband and wife." },
   // in the carousel beside Salma's note (لولي حبيبتي)
   { file: 'IMG_0392.jpg', caption: "The bride and her sister." },
 ];

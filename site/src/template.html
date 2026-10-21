@@ -300,6 +300,11 @@
   .slides{position:relative; aspect-ratio:3/4; overflow:hidden; background:var(--panel-2);}
   .polaroid .slides img{position:absolute; inset:0; height:100%; aspect-ratio:auto; opacity:0; transition:opacity .7s ease;}
   .polaroid .slides img.active{opacity:1;}
+  /* a photo much wider than its frame (a landscape one in a portrait frame)
+     is shown whole, over a blurred copy of itself filling the rest */
+  .polaroid .slides img.whole{object-fit:contain; background:none;}
+  .slides::before{content:""; position:absolute; inset:-24px; background:var(--fill, none) center/cover no-repeat; filter:blur(16px) brightness(.9); opacity:0; transition:opacity .7s ease;}
+  .slides.filled::before{opacity:1;}
   /* square, for a carousel mixing landscape photos in with portrait ones */
   .carousel.square .slides{aspect-ratio:1/1;}
   /* wide, for landscape photos (Mohamed's) */
@@ -1346,6 +1351,10 @@
     "carousel-wife": [
       "IMG-20240612-WA0026__1_.jpg",
       "Screenshot_2024-10-25-21-46-05-660_com_miui_gallery-edit.jpg",
+      // signing the marriage contract
+      "IMG_0060.jpg",
+      "IMG_0070.jpg",
+      "IMG_0058.jpg",
       "IMG-20241109-WA0117.jpg",
       "8F7FA998-4110-4951-A6CE-A890A09BCA8E.jpg",
       "photo_5904292311066595717_y.jpg",
@@ -1363,12 +1372,14 @@
     // beside Hoda's note (الملكة علياء)
     "carousel-hoda": [
       "WhatsApp_Image_2026-10-21_at_7_52_01_PM__1_.jpg",
-      "WhatsApp_Image_2026-10-21_at_7_52_01_PM.jpg"
+      "WhatsApp_Image_2026-10-21_at_7_52_01_PM.jpg",
+      "IMG_0398.jpg"
     ],
     // beside Heba's note (كل عام وإنتِ بخير يا لول)
     "carousel-heba": [
       "WhatsApp_Image_2026-10-21_at_8_35_12_PM.jpg",
-      "WhatsApp_Image_2026-10-21_at_8_32_27_PM.jpg"
+      "WhatsApp_Image_2026-10-21_at_8_32_27_PM.jpg",
+      "IMG_0401.jpg"
     ],
     // beside Najwa's note (Happy birthday to my sister.)
     "carousel-najwa": [
@@ -1411,9 +1422,16 @@
     var prev = root.querySelector('.carousel-btn.prev');
     var next = root.querySelector('.carousel-btn.next');
     var imgs = [], dotBtns = [], current = 0;
+    // the frame's shape, from its CSS aspect-ratio ("3 / 4" -> 0.75)
+    var frameRatio = (function(r){ var m = /([\d.]+)\s*\/\s*([\d.]+)/.exec(r); return m ? m[1] / m[2] : 0.75; })(getComputedStyle(slides).aspectRatio);
 
     photos.forEach(function(photo, i){
       var img = document.createElement('img');
+      // a photo far wider than the frame is shown whole rather than cropped
+      img.addEventListener('load', function(){
+        img.classList.toggle('whole', img.naturalWidth / img.naturalHeight > frameRatio * 1.6);
+        if(i === current) show(current);
+      });
       img.src = photo.src; img.alt = photo.caption;
       slides.appendChild(img);
       imgs.push(img);
@@ -1434,6 +1452,9 @@
       });
       dotBtns.forEach(function(d, j){ d.setAttribute('aria-current', j === current ? 'true' : 'false'); });
       cap.textContent = photos[current].caption;
+      var whole = imgs[current].classList.contains('whole');
+      if(whole) slides.style.setProperty('--fill', 'url("' + photos[current].src + '")');
+      slides.classList.toggle('filled', whole);
     }
 
     // It only turns by itself while it's on screen and nobody is pointing at
