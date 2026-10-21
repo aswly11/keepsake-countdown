@@ -1,6 +1,6 @@
 <title>Aliaa's Keepsake Box</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Amiri:wght@400;700&display=swap');
 
   :root{
     --ground:#f6ecdd;
@@ -54,8 +54,9 @@
     font-family:'Manrope',ui-sans-serif,system-ui,sans-serif;
     overflow-x:hidden;
   }
+  /* Amiri sits behind Fraunces so Arabic text gets a matching serif; Latin text never reaches it */
   h1,h2,h3,.display{
-    font-family:'Fraunces',ui-serif,Georgia,serif;
+    font-family:'Fraunces','Amiri',ui-serif,Georgia,serif;
     font-weight:600;
     text-wrap:balance;
     margin:0;
@@ -128,7 +129,7 @@
     font-family:'Manrope',sans-serif; font-size:15px;
   }
   .gate-form input::placeholder{color:var(--ink-soft); opacity:.75;}
-  .gate-form input:focus-visible, button:focus-visible, .envelope:focus-visible, .polaroid:focus-visible{
+  .gate-form input:focus-visible, button:focus-visible, .polaroid:focus-visible{
     outline:2px solid var(--rose); outline-offset:2px;
   }
   .gate-submit{
@@ -233,6 +234,44 @@
   /* ---------- corkboard / gallery ---------- */
   #memories{background:var(--panel-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
   .corkboard{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:34px 24px; padding-top:12px;}
+  /* the first photo with the lines typed beside it (under it on phones) */
+  .story-wrap{display:flex; align-items:center; justify-content:center; gap:clamp(28px,5vw,56px); max-width:880px; margin:0 auto 56px;}
+  .polaroid.story-photo{flex:0 0 auto; width:min(280px,72vw); margin:0; --r:-3deg; cursor:default;}
+  .polaroid.story-photo img{aspect-ratio:auto;}
+  /* min-height keeps the board from jumping as lines type and erase */
+  .story{
+    flex:1 1 0; min-width:0; min-height:3.4em; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    font-family:'Fraunces','Amiri',ui-serif,Georgia,serif; font-size:clamp(22px,4.6vw,32px); line-height:1.7; text-align:center; color:var(--ink);
+  }
+  .story-line{margin:0; max-width:26ch;}
+  @media (max-width:720px){
+    .story-wrap{flex-direction:column;}
+    .story{flex:none; width:100%;}
+  }
+  /* the poem under the story, her photo beside it (above it on phones). The
+     wrap is right-to-left, so the photo sits on the right, opposite the story's. */
+  .poem-wrap{display:flex; align-items:flex-start; justify-content:center; gap:clamp(28px,5vw,56px); max-width:880px; margin:0 auto 64px;}
+  /* sticky so the photo stays beside the couplets while they scroll past */
+  .polaroid.poem-photo{flex:0 0 auto; width:min(280px,72vw); margin:0; --r:3deg; cursor:default; position:sticky; top:calc(var(--nav-h) + 32px);}
+  .polaroid.poem-photo img{aspect-ratio:auto;}
+  .poem{flex:1 1 0; min-width:0; max-width:15em; font-family:'Amiri',ui-serif,Georgia,serif; font-size:clamp(19px,3.6vw,22px); color:var(--ink);}
+  .poem h3{font-family:'Amiri',ui-serif,Georgia,serif; font-weight:700; font-size:clamp(32px,6vw,42px); color:var(--rose); text-align:center; margin-bottom:28px;}
+  /* each couplet's two halves staggered, the second set at the far side;
+     the narrow max-width above keeps them overlapping so they read as one couplet */
+  .bayt{margin:0 0 18px; max-width:none; font-size:inherit; line-height:2; color:inherit;}
+  .bayt span{display:block;}
+  .bayt span + span{text-align:end;}
+  /* wide enough for the halves side by side, the way a couplet is printed */
+  @media (min-width:900px){
+    .poem{max-width:24em;}
+    .bayt{display:grid; grid-template-columns:1fr 1fr; column-gap:1.5em; margin-bottom:8px;}
+    .bayt span, .bayt span + span{text-align:center;}
+  }
+  @media (max-width:720px){
+    .poem-wrap{flex-direction:column; align-items:center;}
+    .polaroid.poem-photo{position:relative; top:auto;}
+    .poem{flex:none; width:100%;}
+  }
   .polaroid{
     background:#fff; padding:10px 10px 40px; border-radius:2px;
     box-shadow:0 14px 26px -12px var(--shadow);
@@ -276,62 +315,6 @@
   #lb-close{position:absolute; top:18px; right:22px; background:none; border:none; color:#f3e9e0; font-size:26px; opacity:.7;}
   #lb-close:hover{opacity:1;}
 
-  /* ---------- timeline ---------- */
-  .timeline{position:relative; padding-top:12px;}
-  .timeline::before{
-    content:""; position:absolute; left:50%; top:0; bottom:0; width:2px;
-    background:linear-gradient(var(--line),var(--line)); transform:translateX(-50%);
-  }
-  .tl-row{display:grid; grid-template-columns:1fr 40px 1fr; align-items:center; gap:0; margin-bottom:38px;}
-  .tl-row:nth-child(odd) .tl-card{grid-column:1; justify-self:end; text-align:right;}
-  .tl-row:nth-child(even) .tl-card{grid-column:3; justify-self:start; text-align:left;}
-  .tl-dot{
-    grid-column:2; width:14px; height:14px; border-radius:50%; background:var(--rose);
-    box-shadow:0 0 0 5px var(--panel), 0 0 0 6px var(--line); justify-self:center;
-  }
-  .tl-card{
-    max-width:340px; background:var(--panel); border:1px solid var(--line); border-radius:6px;
-    padding:14px; display:flex; gap:12px; align-items:center; box-shadow:0 12px 26px -16px var(--shadow);
-  }
-  .tl-row:nth-child(even) .tl-card{flex-direction:row-reverse;}
-  .tl-card img{width:56px; height:56px; object-fit:cover; border-radius:4px; flex:0 0 auto;}
-  .tl-card .tl-text b{font-family:'Fraunces',serif; font-size:15px; display:block;}
-  .tl-card .tl-text span{font-size:12px; color:var(--ink-soft); font-family:'Space Mono',monospace;}
-  @media (max-width:680px){
-    .timeline::before{left:20px;}
-    .tl-row{grid-template-columns:40px 1fr; gap:12px;}
-    .tl-dot{grid-column:1; justify-self:center;}
-    .tl-row:nth-child(odd) .tl-card, .tl-row:nth-child(even) .tl-card{grid-column:2; justify-self:start; text-align:left; flex-direction:row;}
-  }
-
-  /* ---------- letters ---------- */
-  .envelopes{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:28px;}
-  .envelope{
-    position:relative; aspect-ratio:3/2; background:var(--panel-2); border:1px solid var(--line);
-    border-radius:4px; padding:0; overflow:visible; text-align:left;
-    box-shadow:0 16px 30px -16px var(--shadow); transform:rotate(var(--r,0deg));
-  }
-  .env-face{position:absolute; inset:0; border-radius:4px; overflow:hidden; background:linear-gradient(var(--panel-2),var(--panel-2)), linear-gradient(135deg, transparent 49.3%, var(--line) 49.3% 50.7%, transparent 50.7%);}
-  .env-flap{position:absolute; top:0; left:0; right:0; height:56%; background:var(--panel); clip-path:polygon(0 0,100% 0,50% 78%); transform-origin:top center; transition:transform .55s cubic-bezier(.3,.7,.2,1); z-index:3; border-bottom:1px solid var(--line);}
-  .envelope.open .env-flap{transform:rotateX(180deg);}
-  .env-seal{position:absolute; left:50%; top:30%; transform:translate(-50%,-50%) rotate(-4deg); width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 35% 30%, var(--rose), color-mix(in srgb, var(--rose) 70%, black)); box-shadow:0 4px 8px rgba(0,0,0,.25); z-index:4; display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; transition:opacity .3s ease .1s;}
-  .envelope.open .env-seal{opacity:0;}
-  .env-title{position:absolute; left:16px; right:16px; bottom:14px; z-index:2; font-family:'Space Mono',monospace; font-size:12.5px; color:var(--ink-soft);}
-  .env-title b{display:block; font-family:'Fraunces',serif; font-size:16px; font-weight:600; color:var(--ink); margin-bottom:2px;}
-  .env-stamp{position:absolute; top:12px; right:12px; width:34px; height:40px; border:1.5px solid var(--gold); z-index:4; opacity:.7; display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--gold);}
-
-  .letter-overlay{position:fixed; inset:0; z-index:210; background:rgba(10,6,12,.88); display:flex; align-items:center; justify-content:center; padding:5vh 20px; opacity:0; visibility:hidden; transition:opacity .35s ease, visibility .35s ease;}
-  .letter-overlay.open{opacity:1; visibility:visible;}
-  .letter-paper{width:min(560px,100%); max-height:82vh; overflow-y:auto; background:var(--panel); color:var(--ink); border-radius:3px; padding:44px 40px; box-shadow:0 40px 80px rgba(0,0,0,.4); transform:translateY(24px) scale(.97); opacity:0; transition:transform .4s cubic-bezier(.2,.8,.2,1), opacity .4s ease;}
-  .letter-overlay.open .letter-paper{transform:translateY(0) scale(1); opacity:1;}
-  .letter-paper h3{font-size:22px; margin-bottom:18px;}
-  .letter-body{font-size:15.5px; line-height:1.85; color:var(--ink); white-space:pre-wrap;}
-  .letter-body .cursor{display:inline-block; width:2px; height:1em; background:var(--rose); vertical-align:-2px; margin-left:1px; animation:blink 1s step-start infinite;}
-  @keyframes blink{50%{opacity:0;}}
-  .letter-sign{margin-top:24px; font-family:'Fraunces',serif; font-style:italic; color:var(--ink-soft);}
-  .letter-close{margin-top:26px; background:none; border:1px solid var(--line); color:var(--ink-soft); padding:9px 16px; border-radius:3px; font-size:13px;}
-  .letter-close:hover{border-color:var(--rose); color:var(--rose);}
-
   /* ---------- vault ---------- */
   #vault{text-align:center;}
   .vault-box{
@@ -349,6 +332,8 @@
   .vault-btn:disabled{opacity:.4; cursor:not-allowed;}
   .vault-btn:not(:disabled):hover{background:var(--gold); color:var(--panel);}
   .vault-unlocked .vault-body{font-size:15.5px; line-height:1.85; white-space:pre-wrap; text-align:left; margin-top:12px;}
+  .vault-body .cursor, .story .cursor{display:inline-block; width:2px; height:1em; background:var(--rose); vertical-align:-2px; margin-left:1px; animation:blink 1s step-start infinite;}
+  @keyframes blink{50%{opacity:0;}}
 
   /* ---------- surprise (appears on the 22nd) ---------- */
   #surprise{text-align:center;}
@@ -376,23 +361,16 @@
     max-width:520px; margin:0 auto; background:var(--panel); border:1px solid var(--line); border-radius:8px;
     padding:40px 32px; box-shadow:0 24px 50px -24px var(--shadow); text-align:left;
   }
-  .surprise-note h3{font-size:22px; margin-bottom:14px;}
+  .surprise-note h3{font-size:22px; margin-bottom:14px; text-align:center;}
+  /* her age with her photo between the digits — the layout of the 2021 birthday page */
+  .age-banner{display:flex; align-items:center; justify-content:center; gap:clamp(10px,3vw,18px); margin-bottom:20px;}
+  .age-banner span{font-family:'Fraunces',serif; font-weight:400; font-size:clamp(76px,22vw,116px); line-height:1; color:var(--rose);}
+  .age-banner img{
+    width:clamp(84px,24vw,112px); aspect-ratio:1/1; border-radius:50%; object-fit:cover;
+    border:3px solid var(--panel); box-shadow:0 0 0 1px var(--line), 0 14px 26px -12px var(--shadow);
+  }
   .surprise-body{font-size:15.5px; line-height:1.85; color:var(--ink); white-space:pre-wrap;}
-
-  /* ---------- wishes ---------- */
-  #wishes{background:var(--panel-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
-  .postcard{
-    max-width:520px; margin:0 auto; background:var(--panel); border:1px solid var(--line); border-radius:6px;
-    padding:34px; box-shadow:0 20px 40px -20px var(--shadow); position:relative;
-  }
-  .postcard::after{content:"VIA\A AIR\A MAIL"; white-space:pre; position:absolute; top:16px; right:16px; font-family:'Space Mono',monospace; font-size:8px; letter-spacing:.1em; color:var(--gold); border:1px solid var(--gold); padding:6px 8px; opacity:.6; text-align:center;}
-  .postcard textarea{
-    width:100%; min-height:90px; resize:vertical; margin:14px 0; padding:12px; border-radius:4px;
-    border:1px solid var(--line); background:var(--panel-2); color:var(--ink); font-family:'Manrope',sans-serif; font-size:14px;
-  }
-  .wish-name{width:100%; padding:11px 12px; border-radius:4px; border:1px solid var(--line); background:var(--panel-2); color:var(--ink); font-size:14px; margin-bottom:10px;}
-  .wish-btn{display:inline-block; padding:12px 22px; border-radius:3px; border:none; background:var(--ink); color:var(--panel); font-size:14px; font-weight:600; text-decoration:none; transition:transform .15s ease;}
-  .wish-btn:hover{transform:translateY(-1px);}
+  .letter-sign{margin-top:24px; font-family:'Fraunces',serif; font-style:italic; color:var(--ink-soft);}
 
   /* ---------- footer ---------- */
   footer{text-align:center; padding:64px 24px 80px; color:var(--ink-soft); font-family:'Fraunces',serif; font-style:italic; font-size:17px;}
@@ -431,10 +409,7 @@
   <div class="nav-links">
     <a href="#surprise" data-sec="surprise" id="nav-surprise" hidden>Surprise</a>
     <a href="#memories" data-sec="memories">Memories</a>
-    <a href="#timeline" data-sec="timeline">Timeline</a>
-    <a href="#letters" data-sec="letters">Letters</a>
     <a href="#vault" data-sec="vault">The 22nd</a>
-    <a href="#wishes" data-sec="wishes">Wishes</a>
   </div>
 </nav>
 
@@ -467,6 +442,11 @@
       <div class="gift-hint">Tap to open</div>
     </div>
     <div class="surprise-note" id="surprise-note" hidden>
+      <div class="age-banner" id="age-banner" role="img" hidden>
+        <span id="age-first"></span>
+        <img id="age-photo" alt="" />
+        <span id="age-last"></span>
+      </div>
       <h3 id="surprise-title"></h3>
       <div class="surprise-body" id="surprise-body"></div>
       <div class="letter-sign">&mdash; Always, Ahmed</div>
@@ -477,27 +457,40 @@
     <div class="sec-head reveal">
       <div class="eyebrow">A corkboard of us</div>
       <h2>Memories, pinned up</h2>
-      <p>Little pieces of the last couple of years &mdash; click any one to see it properly.</p>
+      <p>Little pieces from the very start up to now &mdash; click any one to see it properly.</p>
+    </div>
+    <div class="story-wrap reveal">
+      <figure class="polaroid story-photo" id="story-photo" hidden>
+        <div class="tape"></div>
+        <img id="story-img" alt="" />
+        <figcaption class="cap" id="story-cap"></figcaption>
+      </figure>
+      <div class="story" id="story">
+        <div class="story-line" id="story-line"></div>
+      </div>
+    </div>
+    <div class="poem-wrap reveal" dir="rtl" lang="ar">
+      <figure class="polaroid poem-photo" id="poem-photo" hidden>
+        <div class="tape"></div>
+        <img id="poem-img" alt="" />
+        <figcaption class="cap" id="poem-cap"></figcaption>
+      </figure>
+      <div class="poem">
+        <h3>عَلياء</h3>
+        <p class="bayt reveal"><span>ثلاثونَ يومًا وكنّا نُجيدُ</span><span>فنونَ الخصامِ كأنّا عِدا</span></p>
+        <p class="bayt reveal"><span>أعلياءُ، في الجامعاتِ التقينا</span><span>وكانَ اللقاءُ لنا موعِدا</span></p>
+        <p class="bayt reveal"><span>رأيتُكِ تُلقينَ عنكِ الكمامةَ</span><span>فغابَ الكلامُ وضاعَ الصدى</span></p>
+        <p class="bayt reveal"><span>كأنَّ ملاكًا يُزيحُ النقابَ</span><span>فأشرقَ وجهٌ كثلجٍ بدا</span></p>
+        <p class="bayt reveal"><span>وعيناكِ كالليلِ، أنظرُ فيها</span><span>فأهوي إلى هُوّةٍ لا مدى</span></p>
+        <p class="bayt reveal"><span>خلافاتُنا كلُّها غيرةٌ</span><span>هي الحبُّ يأبى بأن يُجحَدا</span></p>
+        <p class="bayt reveal"><span>نُغلّقُ بابًا بغضبٍ شديدٍ</span><span>ونفتحُهُ قبلَ أن يُوصَدا</span></p>
+        <p class="bayt reveal"><span>وكم قلتُ: هذا الهوى لن يدومَ</span><span>فخابت ظنوني وقلبي اهتدى</span></p>
+        <p class="bayt reveal"><span>وفي كلِّ ليلٍ أقولُ: كفى</span><span>فيأتي صباحُكِ مثلَ الندى</span></p>
+        <p class="bayt reveal"><span>ثلاثونَ يومًا من الخُلفِ كانت</span><span>طريقًا إليكِ، وبيتًا غدا</span></p>
+        <p class="bayt reveal"><span>فعلياءُ، كلُّ الخصامِ القديمِ</span><span>فِداكِ، وعمري بكِ المُبتدا</span></p>
+      </div>
     </div>
     <div class="corkboard" id="corkboard"></div>
-  </section>
-
-  <section id="timeline">
-    <div class="sec-head reveal">
-      <div class="eyebrow">How we got here</div>
-      <h2>A little timeline</h2>
-      <p>Built straight from the dates on these photos, month by month.</p>
-    </div>
-    <div class="timeline" id="timeline-track"></div>
-  </section>
-
-  <section id="letters">
-    <div class="sec-head reveal">
-      <div class="eyebrow">Words that wouldn't fit in a text</div>
-      <h2>A few letters, waiting for you</h2>
-      <p>Each envelope is sealed until you open it. Read them whenever you'd like.</p>
-    </div>
-    <div class="envelopes" id="envelopes"></div>
   </section>
 
   <section id="vault">
@@ -511,19 +504,6 @@
       <h3 id="vault-title">Locked, for now</h3>
       <div class="vault-count mono" id="vault-count"></div>
       <p id="vault-hint" style="margin:0 auto;">Come back at midnight on the 22nd, Cairo time, and this will open on its own.</p>
-    </div>
-  </section>
-
-  <section id="wishes">
-    <div class="sec-head reveal">
-      <div class="eyebrow">Got something to say?</div>
-      <h2>Send Aliaa a wish</h2>
-      <p>Write a little note below &mdash; it'll open in your email, addressed to Ahmed, who'll pass it along.</p>
-    </div>
-    <div class="postcard reveal">
-      <input type="text" class="wish-name" id="wish-name" placeholder="Your name" />
-      <textarea id="wish-text" placeholder="Happy birthday, Aliaa! ..."></textarea>
-      <a href="#" class="wish-btn" id="wish-send">Send the wish &#9993;</a>
     </div>
   </section>
 
@@ -543,15 +523,6 @@
   </figure>
   <button id="lb-next" class="lb-btn" aria-label="Next">&#8250;</button>
   <button id="lb-close" aria-label="Close">&times;</button>
-</div>
-
-<div class="letter-overlay" id="letter-overlay">
-  <div class="letter-paper">
-    <h3 id="letter-title"></h3>
-    <div class="letter-body" id="letter-body"></div>
-    <div class="letter-sign" id="letter-sign">&mdash; Always, Ahmed</div>
-    <button class="letter-close" id="letter-close">Fold &amp; put away</button>
-  </div>
 </div>
 
 <script>
@@ -581,7 +552,7 @@
       main.hidden = false;
       // Deferred, not called directly: this runs while the script is still
       // executing its first pass top-to-bottom, before later `var`
-      // statements (tickers, MEDIA, LETTERS, CAIRO_OFFSET_MS, ...) have
+      // statements (tickers, MEDIA, CAIRO_OFFSET_MS, ...) have
       // actually been assigned — only their hoisted `undefined` exists yet.
       // Calling initPage() straight from here used to fail silently on
       // every returning visit (everything past the countdown depends on
@@ -620,12 +591,11 @@
     if(pageInited) return;
     pageInited = true;
     safeRun('countdown', setupCountdown);
+    safeRun('story', setupStory);
+    safeRun('poem', setupPoem);
     safeRun('gallery', buildGallery);
-    safeRun('timeline', buildTimeline);
-    safeRun('letters', buildLetters);
     safeRun('vault', setupVault);
     safeRun('surprise', setupSurprise);
-    safeRun('wishes', setupWishes);
     safeRun('nav', setupNav);
     safeRun('reveals', setupReveals);
     safeRun('ambient', function(){ if(!reduceMotion) startAmbient(); else document.getElementById('ambient').remove(); });
@@ -658,6 +628,7 @@
     }
     return target;
   }
+  function turningAge(){ return TARGET.getUTCFullYear() - 1998; }
 
   // done: the birthday has arrived; today: it is still the 22nd in Cairo
   function parts(diff){
@@ -675,8 +646,7 @@
 
   function setupCountdown(){
     TARGET = nextBirthday();
-    var ageYear = TARGET.getUTCFullYear() - 1998;
-    document.getElementById('age-tag').textContent = 'Turning ' + ageYear;
+    document.getElementById('age-tag').textContent = 'Turning ' + turningAge();
 
     var dEl=document.getElementById('cd-days'), hEl=document.getElementById('cd-hours'),
         mEl=document.getElementById('cd-mins'), sEl=document.getElementById('cd-secs');
@@ -757,14 +727,18 @@
 
   /* ================= media / gallery ================= */
   var MEDIA = /*__MEDIA_ITEMS_JSON__*/;
-  var TIMELINE = /*__TIMELINE_JSON__*/;
+
+  // what's pinned on the board (and paged through in the lightbox): MEDIA
+  // minus the photos shown beside the story and the poem. Filled in by buildGallery.
+  var BOARD = [];
 
   var rotations = [-3,2,-2,3,-4,1.5,4,-1.5,2.5,-2.5,3.5,-3.5];
 
   function buildGallery(){
     var board = document.getElementById('corkboard');
     var frag = document.createDocumentFragment();
-    MEDIA.forEach(function(item, i){
+    BOARD = MEDIA.filter(function(m){ return m.file !== STORY_PHOTO && m.file !== POEM_PHOTO; });
+    BOARD.forEach(function(item, i){
       var el = document.createElement('button');
       el.className = 'polaroid';
       el.style.setProperty('--r', rotations[i % rotations.length] + 'deg');
@@ -801,31 +775,6 @@
     observeReveal(board.querySelectorAll('.polaroid'), 0.15);
   }
 
-  /* ================= timeline ================= */
-  function buildTimeline(){
-    var track = document.getElementById('timeline-track');
-    if(!TIMELINE.length){ track.parentElement.hidden = true; return; }
-    var frag = document.createDocumentFragment();
-    TIMELINE.forEach(function(entry){
-      var row = document.createElement('div');
-      row.className = 'tl-row reveal';
-      var dot = document.createElement('div');
-      dot.className = 'tl-dot';
-      var cardEl = document.createElement('div');
-      cardEl.className = 'tl-card';
-      var img = document.createElement('img');
-      img.src = MEDIA[entry.thumbIndex].src;
-      img.alt = entry.label;
-      var text = document.createElement('div');
-      text.className = 'tl-text';
-      text.innerHTML = '<b>' + entry.label + '</b><span>' + entry.count + (entry.count === 1 ? ' photo' : ' photos') + '</span>';
-      cardEl.appendChild(img); cardEl.appendChild(text);
-      row.appendChild(dot); row.appendChild(cardEl);
-      frag.appendChild(row);
-    });
-    track.appendChild(frag);
-  }
-
   /* ================= lightbox ================= */
   var lb = document.getElementById('lightbox');
   var lbImg = document.getElementById('lb-img');
@@ -839,7 +788,7 @@
     lb.classList.add('open');
   }
   function renderLightbox(){
-    var item = MEDIA[lbIndex];
+    var item = BOARD[lbIndex];
     lbVideo.pause();
     if(item.type === 'video'){
       lbImg.hidden = true; lbVideo.hidden = false; lbVideo.src = item.src;
@@ -850,8 +799,8 @@
   }
   function closeLightbox(){ lb.classList.remove('open'); lbVideo.pause(); }
   document.getElementById('lb-close').addEventListener('click', closeLightbox);
-  document.getElementById('lb-prev').addEventListener('click', function(){ lbIndex = (lbIndex - 1 + MEDIA.length) % MEDIA.length; renderLightbox(); });
-  document.getElementById('lb-next').addEventListener('click', function(){ lbIndex = (lbIndex + 1) % MEDIA.length; renderLightbox(); });
+  document.getElementById('lb-prev').addEventListener('click', function(){ lbIndex = (lbIndex - 1 + BOARD.length) % BOARD.length; renderLightbox(); });
+  document.getElementById('lb-next').addEventListener('click', function(){ lbIndex = (lbIndex + 1) % BOARD.length; renderLightbox(); });
   lb.addEventListener('click', function(ev){ if(ev.target === lb) closeLightbox(); });
   document.addEventListener('keydown', function(ev){
     if(!lb.classList.contains('open')) return;
@@ -860,71 +809,12 @@
     if(ev.key === 'ArrowRight') document.getElementById('lb-next').click();
   });
 
-  /* ================= letters ================= */
-  var LETTERS = [
-    {
-      title: "Why I Love You",
-      body: "It's never one big reason — it's the small ones that stack up until they're impossible to count. The way you say my name when you're about to tell me something exciting. How you still laugh at your own jokes before you finish telling them. The quiet, steady way you show up for the people you love, on the good days and the hard ones.\n\nTwenty-eight years old, and somehow still the best surprise of my life."
-    },
-    {
-      title: "The Story So Far",
-      body: "We started as messages back and forth on ordinary evenings, the kind that turned into hours without either of us noticing. Somewhere in between all those conversations, you stopped being a nice surprise and started being home.\n\nEvery photo in that corkboard above is a small piece of that story. There are a lot more pages left to write, and I want to write every one of them with you."
-    },
-    {
-      title: "On Hard Days",
-      body: "If you're reading this on a day that isn't a good one — stop for a second. Breathe. Whatever it is, it's not permanent, and you are not carrying it alone.\n\nYou've gotten through every hard day you've ever had, one hundred percent of them. I'm proud of you for that, and I'm right here for this one too."
-    },
-    {
-      title: "Ten Years From Now",
-      body: "I think about us older — a little greyer, probably still arguing about the same small things, still choosing each other anyway. I hope we look back at twenty-eight and smile at how much we didn't know yet.\n\nWhatever the next ten years hold, I already know the best part of them: you'll be in all of it."
-    },
-    {
-      title: "A Little Encouragement",
-      body: "For whenever you're doubting yourself — you do that more than you let on, and I notice every time.\n\nYou are further along than you think, better at this than you give yourself credit for, and loved far more than a bad day could ever undo. Whatever you're second-guessing right now: don't. You've got this, and you've got me."
-    },
-    {
-      title: "Just Because",
-      body: "No occasion for this one. I just wanted you to open something and find nothing but good news: you are loved, exactly as you are, on your ordinary days as much as your birthday.\n\nThat's it. That's the whole letter."
-    }
-  ];
+  /* ================= typewriter ================= */
+  // milliseconds per character, and per full stop / line break
+  var TYPE_PACE = {ch:16, stop:90};
 
-  var envRotations = [-2,2,-1.5,1.5,-2.5,2.5];
-
-  function buildLetters(){
-    var wrap = document.getElementById('envelopes');
-    var frag = document.createDocumentFragment();
-    LETTERS.forEach(function(letter, i){
-      var env = document.createElement('button');
-      env.className = 'envelope';
-      env.style.setProperty('--r', envRotations[i % envRotations.length] + 'deg');
-      env.setAttribute('aria-label', 'Open letter: ' + letter.title);
-      env.innerHTML =
-        '<div class="env-face"></div>' +
-        '<div class="env-stamp">&#9825;</div>' +
-        '<div class="env-flap"></div>' +
-        '<div class="env-seal">&#9825;</div>' +
-        '<div class="env-title"><b>' + letter.title + '</b>Tap to open</div>';
-      env.addEventListener('click', function(){
-        env.classList.add('open');
-        setTimeout(function(){ openLetter(letter); }, reduceMotion ? 0 : 420);
-      });
-      frag.appendChild(env);
-    });
-    wrap.appendChild(frag);
-  }
-
-  var letterOverlay = document.getElementById('letter-overlay');
-  var letterTitle = document.getElementById('letter-title');
-  var letterBody = document.getElementById('letter-body');
-
-  function openLetter(letter){
-    letterTitle.textContent = letter.title;
-    letterOverlay.classList.add('open');
-    typeText(letterBody, letter.body);
-  }
-  // The timer lives on the target, so the letter overlay and the vault each
-  // type independently — opening an envelope must not cut the vault letter off.
   function typeText(target, text){
+    var pace = TYPE_PACE;
     clearTimeout(target.typeTimer);
     target.innerHTML = '';
     if(reduceMotion){ target.textContent = text; return; }
@@ -939,7 +829,7 @@
         span.textContent += text.charAt(i);
         i++;
         var ch = text.charAt(i-1);
-        var delay = ch === '.' || ch === '\n' ? 90 : 16;
+        var delay = ch === '.' || ch === '\n' ? pace.stop : pace.ch;
         target.typeTimer = setTimeout(step, delay);
       } else {
         cursor.remove();
@@ -947,19 +837,116 @@
     }
     step();
   }
-  function closeLetter(){
-    letterOverlay.classList.remove('open');
-    clearTimeout(letterBody.typeTimer);
-    document.querySelectorAll('.envelope.open').forEach(function(e){ e.classList.remove('open'); });
+
+  /* ================= story (typed beside the first photo) ================= */
+  // The photo from the first time Ahmed saw her (a file from media/compressed),
+  // shown beside the story and left off the board below it.
+  var STORY_PHOTO = "gift2021_10.jpg";
+  // Typed one at a time in this order, each erased before the next — the
+  // lines and the effect from the 2021 birthday page. The last one stays.
+  var STORY_LINES = [
+    "البداية",
+    "لا ارى تفسيرا لما حدث غير انه القدر",
+    "كان ذلك بعد ان دق قلبي في اول مره اراكي فيها",
+    "جمال لا تشوبه شائبة",
+    "لا اعلم ولكني رأيت الكمال في وجهك",
+    "كان في عقلي جمله واحده",
+    "Our babies will be smart and beautiful"
+  ];
+  // milliseconds per typed character, holding a finished line, per erased character (the 2021 page's speeds)
+  var STORY_PACE = {type:100, hold:2000, erase:25};
+
+  function setupStory(){
+    var box = document.getElementById('story');
+    var line = document.getElementById('story-line');
+    function dirOf(text){ return /[؀-ۿ]/.test(text) ? 'rtl' : 'ltr'; }
+
+    var photo = MEDIA.filter(function(m){ return m.file === STORY_PHOTO; })[0];
+    if(photo){
+      document.getElementById('story-img').src = photo.src;
+      document.getElementById('story-img').alt = photo.caption;
+      document.getElementById('story-cap').textContent = photo.caption;
+      document.getElementById('story-photo').hidden = false;
+    }
+
+    if(reduceMotion){
+      // every line at once, nothing typed or erased
+      line.remove();
+      STORY_LINES.forEach(function(text){
+        var el = document.createElement('div');
+        el.className = 'story-line';
+        el.dir = dirOf(text);
+        el.textContent = text;
+        box.appendChild(el);
+      });
+      return;
+    }
+
+    var span = document.createElement('span');
+    var cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    line.appendChild(span);
+    line.appendChild(cursor);
+
+    // The story only moves while it's on screen, so scrolling past it
+    // pauses it rather than letting lines go by unseen.
+    var visible = false, waiting = null;
+    function later(fn, ms){
+      setTimeout(function(){ if(visible) fn(); else waiting = fn; }, ms);
+    }
+
+    var n = 0, i = 0;
+    function type(){
+      var text = STORY_LINES[n];
+      if(i === 0) line.dir = dirOf(text);
+      if(i < text.length){
+        span.textContent = text.slice(0, ++i);
+        later(type, STORY_PACE.type);
+      } else if(n < STORY_LINES.length - 1){
+        later(erase, STORY_PACE.hold);
+      } else {
+        cursor.remove();
+      }
+    }
+    function erase(){
+      if(i > 0){
+        span.textContent = STORY_LINES[n].slice(0, --i);
+        later(erase, STORY_PACE.erase);
+      } else {
+        n++;
+        later(type, STORY_PACE.type * 4);
+      }
+    }
+
+    waiting = type;
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(entries){
+        visible = entries[0].isIntersecting;
+        if(visible && waiting){ var fn = waiting; waiting = null; fn(); }
+      }, {threshold:0.6}).observe(box);
+    } else {
+      visible = true;
+      waiting = null;
+      type();
+    }
   }
-  document.getElementById('letter-close').addEventListener('click', closeLetter);
-  letterOverlay.addEventListener('click', function(ev){ if(ev.target === letterOverlay) closeLetter(); });
-  document.addEventListener('keydown', function(ev){
-    if(ev.key === 'Escape' && letterOverlay.classList.contains('open')) closeLetter();
-  });
+
+  /* ================= poem (under the story, beside her photo) ================= */
+  // The photo (a file from media/compressed) shown beside the poem and left
+  // off the board below it. The poem itself is in the markup, in .poem.
+  var POEM_PHOTO = "WhatsApp_Image_2026-09-04_at_10_05_21_AM.jpg";
+
+  function setupPoem(){
+    var photo = MEDIA.filter(function(m){ return m.file === POEM_PHOTO; })[0];
+    if(!photo) return;
+    document.getElementById('poem-img').src = photo.src;
+    document.getElementById('poem-img').alt = photo.caption;
+    document.getElementById('poem-cap').textContent = photo.caption;
+    document.getElementById('poem-photo').hidden = false;
+  }
 
   /* ================= vault (auto-unlocks on the 22nd) ================= */
-  var VAULT_LETTER = "There's nothing left to wait for now — it's your day.\n\nHappy birthday, Aliaa. Twenty-eight looks good on you already. Every photo above, every letter — they were all just a long way of saying the same thing: I hope today hands you every good thing you deserve, and I'm endlessly glad I get to love you through all the years still coming.";
+  var VAULT_LETTER = "There's nothing left to wait for now — it's your day.\n\nHappy birthday, Aliaa. Twenty-eight looks good on you already. Every photo above was just a long way of saying the same thing: I hope today hands you every good thing you deserve, and I'm endlessly glad I get to love you through all the years still coming.";
 
   function setupVault(){
     var box = document.getElementById('vault-box');
@@ -993,9 +980,12 @@
   // What she finds inside the gift. The section and its nav link stay hidden
   // until the birthday arrives, and this text is only put on the page once
   // she opens the box.
+  // photo: the file (from media/compressed) shown between the digits of her
+  // age above the note — the photo and layout the 2021 birthday page used.
   var SURPRISE = {
     title: "Happy birthday, Aliaa",
-    body: "I kept this part hidden until the day itself, so there'd be one thing in here you couldn't peek at early.\n\nHappy twenty-eighth. Today is yours, start to finish, and I'm so glad I get to celebrate you.\n\nOne more thing: the last letter at the bottom of this page has unlocked too. Go read it."
+    photo: "gift2021_05.jpg",
+    body: "I kept this part hidden until the day itself, so there'd be one thing in here you couldn't peek at early.\n\nYou might recognize the top of this note. It's how the page I made for your twenty-third looked, same photo and all, with one number changed.\n\nHappy twenty-eighth. Today is yours, start to finish, and I'm so glad I get to celebrate you.\n\nOne more thing: the letter near the bottom of this page has unlocked too. Go read it."
   };
 
   function setupSurprise(){
@@ -1018,24 +1008,21 @@
         burstConfetti(r.left + r.width/2, r.top + r.height/2);
       }
       setTimeout(function(){
+        var photo = MEDIA.filter(function(m){ return m.file === SURPRISE.photo; })[0];
+        if(photo){
+          var age = String(turningAge());
+          var banner = document.getElementById('age-banner');
+          document.getElementById('age-first').textContent = age.slice(0, -1);
+          document.getElementById('age-last').textContent = age.slice(-1);
+          document.getElementById('age-photo').src = photo.src;
+          banner.setAttribute('aria-label', 'Turning ' + age);
+          banner.hidden = false;
+        }
         document.getElementById('surprise-title').textContent = SURPRISE.title;
         document.getElementById('surprise-body').textContent = SURPRISE.body;
         document.getElementById('gift-wrap').hidden = true;
         document.getElementById('surprise-note').hidden = false;
       }, reduceMotion ? 0 : 520);
-    });
-  }
-
-  /* ================= wishes (mailto) ================= */
-  function setupWishes(){
-    var btn = document.getElementById('wish-send');
-    btn.addEventListener('click', function(ev){
-      ev.preventDefault();
-      var name = document.getElementById('wish-name').value.trim() || 'A friend of Aliaa';
-      var text = document.getElementById('wish-text').value.trim() || 'Happy birthday, Aliaa!';
-      var subject = encodeURIComponent('A birthday wish for Aliaa, from ' + name);
-      var body = encodeURIComponent(text + '\n\n— ' + name);
-      window.location.href = 'mailto:aswly98@gmail.com?subject=' + subject + '&body=' + body;
     });
   }
 

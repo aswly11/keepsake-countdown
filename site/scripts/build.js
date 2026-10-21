@@ -31,12 +31,29 @@ const genericCaptions = [
 ];
 
 // Undated photos that get a fixed spot and their own caption instead of a
-// generic one. They open the board in the order listed here (oldest first)
-// and stay out of the timeline.
+// generic one. They open the board in the order listed here (oldest first).
 const pinnedFirst = [
   { file: '819e2223-0910-4897-bf84-58cc72c95e4b.jpg', caption: "Where your story begins." },
   { file: '549ab911-0665-422d-83b4-79c37554ce84.jpg', caption: "Tiny you, taking it all in." },
   { file: 'ae74627a-ced9-4c45-8cd3-de150aa6f326.jpg', caption: "Little you, big smile." },
+  // The photos from the 2021 birthday page (the aliaaBirthdayGift repo), in
+  // that page's order. Its one dated photo, gift2021_03_2021-05-02.jpg, is
+  // left out of this list so it's captioned with its month like any dated photo.
+  { file: 'gift2021_01.jpg', caption: "By the water, all calm." },
+  { file: 'gift2021_02.jpg', caption: "Golden hour, that hat." },
+  { file: 'gift2021_04.jpg', caption: "Best seat in the café." },
+  { file: 'gift2021_05.jpg', caption: "The one from your 23rd." },
+  { file: 'gift2021_06.jpg', caption: "That laugh of yours." },
+  { file: 'gift2021_07.jpg', caption: "Flawless. Still true." },
+  { file: 'gift2021_08.jpg', caption: "This smile, exactly." },
+  { file: 'gift2021_09.jpg', caption: "Mid-study selfie break." },
+  // shown beside the typed story at the top of the board, not on the board itself
+  { file: 'gift2021_10.jpg', caption: "The first time I saw you." },
+  { file: 'gift2021_11.jpg', caption: "Perfection. I saw it." },
+  { file: 'gift2021_12.jpg', caption: "All dressed up." },
+  { file: 'gift2021_13.jpg', caption: "Smart and beautiful." },
+  { file: 'gift2021_14.jpg', caption: "You and that donut." },
+  { file: 'gift2021_15.jpg', caption: "Scarf season." },
 ];
 
 function extractDate(name) {
@@ -86,30 +103,16 @@ const mediaItems = items.map(it => {
   const caption = it.pin !== -1 ? pinnedFirst[it.pin].caption
     : it.date ? formatMonth(it.date)
     : genericCaptions[capIdx++ % genericCaptions.length];
-  return { type: 'image', src: `data:image/jpeg;base64,${b64}`, caption, dateKey: it.date ? it.date.toISOString().slice(0, 7) : null };
+  // file: lets the page pick out one specific photo (the surprise's age banner does)
+  return { type: 'image', file: it.file, src: `data:image/jpeg;base64,${b64}`, caption };
 });
-
-// timeline: group dated items by year-month
-const groups = new Map();
-mediaItems.forEach((m, i) => {
-  if (!m.dateKey) return;
-  if (!groups.has(m.dateKey)) groups.set(m.dateKey, []);
-  groups.get(m.dateKey).push(i);
-});
-const timeline = Array.from(groups.entries())
-  .sort((a, b) => a[0].localeCompare(b[0]))
-  .map(([key, idxs]) => ({
-    label: formatMonth(new Date(key + '-01T00:00:00Z')),
-    count: idxs.length,
-    thumbIndex: idxs[0],
-  }));
 
 // video
 const videoFiles = fs.existsSync(videoDir) ? fs.readdirSync(videoDir).filter(f => f.toLowerCase().endsWith('.mp4')) : [];
 videoFiles.forEach(vf => {
   const vbuf = fs.readFileSync(path.join(videoDir, vf));
   const vb64 = vbuf.toString('base64');
-  mediaItems.push({ type: 'video', src: `data:video/mp4;base64,${vb64}`, caption: 'A little clip I love rewatching.', dateKey: null });
+  mediaItems.push({ type: 'video', file: vf, src: `data:video/mp4;base64,${vb64}`, caption: 'A little clip I love rewatching.' });
 });
 
 let html = fs.readFileSync(templatePath, 'utf8');
@@ -123,7 +126,6 @@ function inject(marker, jsonValue) {
 }
 
 inject('/*__MEDIA_ITEMS_JSON__*/', mediaItems);
-inject('/*__TIMELINE_JSON__*/', timeline);
 
 // pull the <title> out so it can sit in a real <head> for the standalone doc
 const titleMatch = html.match(/<title>([\s\S]*?)<\/title>/i);
@@ -167,5 +169,5 @@ const previewHtml = standaloneHtml
 fs.writeFileSync(previewOutPath, previewHtml, 'utf8');
 
 const sizeMB = (Buffer.byteLength(standaloneHtml, 'utf8') / (1024 * 1024)).toFixed(2);
-console.log(`Wrote ${standaloneOutPath}, ${pagesOutPath} (GitHub Pages), and ${fragmentOutPath} (for Artifact publish) — ${sizeMB} MB, ${mediaItems.length} media items, ${timeline.length} timeline months`);
+console.log(`Wrote ${standaloneOutPath}, ${pagesOutPath} (GitHub Pages), and ${fragmentOutPath} (for Artifact publish) — ${sizeMB} MB, ${mediaItems.length} media items`);
 console.log(`Wrote ${previewOutPath} (local birthday preview, not published)`);
