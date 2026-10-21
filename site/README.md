@@ -29,6 +29,7 @@ Open `dist/preview-birthday.html` to see it before the day.
 ## To change things
 
 - **Family PIN**: search for `FAMILY_PIN` near the top of the `<script>` in `src/template.html`. It's currently `221098` (22-10-98).
+- **The photo behind the whole page**: `BACKDROP_PHOTO` in the `<script>` of `src/template.html`, a file name from `media/compressed/`. It's blurred and veiled in cream; how much is `blur(...)` and the `70%` in the `#backdrop` CSS.
 - **The photos behind the countdown**: `COUNTDOWN_PHOTOS` in the `<script>` of `src/template.html` — four file names from `media/compressed/`, for the days, hours, minutes and seconds cells in that order.
 - **The line under the countdown**: in the markup, `#hero-line` in `src/template.html`. It types itself out when the page opens; the speeds are `HERO_LINE_PACE` in the `<script>`.
 - **The age under the countdown**: the age she's turning, with a photo between its two digits, the way the 2021 page showed it. The photo changes every `AGE_PACE` milliseconds (3 seconds), going through `AGE_PHOTOS` in the same file, in that order — file names from `media/compressed/`, picked because they sit well in a circle. If none are found, the banner is left off.
