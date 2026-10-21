@@ -30,16 +30,20 @@ const genericCaptions = [
   "You make ordinary days feel like this.",
 ];
 
-// Undated photos that get a fixed spot and their own caption instead of a
-// generic one. They open the board in the order listed here (oldest first).
+// Undated photos that get their own caption instead of a generic one. None of
+// them are on the board any more: they're all shown beside the typed story or
+// in a poem's carousel (CAROUSELS in src/template.html).
 const pinnedFirst = [
+  // in the carousel beside the mango poem
   { file: '819e2223-0910-4897-bf84-58cc72c95e4b.jpg', caption: "Where your story begins." },
   { file: '549ab911-0665-422d-83b4-79c37554ce84.jpg', caption: "Tiny you, taking it all in." },
   { file: 'ae74627a-ced9-4c45-8cd3-de150aa6f326.jpg', caption: "Little you, big smile." },
   // The photos from the 2021 birthday page (the aliaaBirthdayGift repo), in
-  // that page's order. Its one dated photo, gift2021_03_2021-05-02.jpg, is
-  // left out of this list so it's captioned with its month like any dated photo.
+  // that page's order, all in the carousel beside the Pluto poem except where
+  // noted. Its one dated photo, gift2021_03_2021-05-02.jpg, is left out of
+  // this list so it's captioned with its month like any dated photo.
   { file: 'gift2021_01.jpg', caption: "By the water, all calm." },
+  // in the carousel beside the sea poem
   { file: 'gift2021_02.jpg', caption: "Golden hour, that hat." },
   { file: 'gift2021_04.jpg', caption: "Best seat in the café." },
   { file: 'gift2021_05.jpg', caption: "The one from your 23rd." },
@@ -47,13 +51,28 @@ const pinnedFirst = [
   { file: 'gift2021_07.jpg', caption: "Flawless. Still true." },
   { file: 'gift2021_08.jpg', caption: "This smile, exactly." },
   { file: 'gift2021_09.jpg', caption: "Mid-study selfie break." },
-  // shown beside the typed story at the top of the board, not on the board itself
+  // beside the typed story
   { file: 'gift2021_10.jpg', caption: "The first time I saw you." },
   { file: 'gift2021_11.jpg', caption: "Perfection. I saw it." },
   { file: 'gift2021_12.jpg', caption: "All dressed up." },
   { file: 'gift2021_13.jpg', caption: "Smart and beautiful." },
   { file: 'gift2021_14.jpg', caption: "You and that donut." },
   { file: 'gift2021_15.jpg', caption: "Scarf season." },
+];
+
+// Photos in media/compressed (and videos in media/video) that are left off the
+// page entirely. Listed here rather than deleted, since resize.ps1 would
+// regenerate the photos from the originals.
+const leftOut = [
+  'WhatsApp_Image_2026-09-04_at_10_05_52_AM.jpg',
+  // the same Madinah photo as IMG_2304__1_.jpg, which the umrah carousel shows
+  'photo_5780788018209213033_y.jpg',
+  // the last of the board, taken off it
+  'gift2021_03_2021-05-02.jpg',
+  'IMG-20241118-WA0012.jpg',
+  'IMG-20241123-WA0003.jpg',
+  'photo_5780788018209213034_y.jpg',
+  'VID-20240210-WA0014.mp4',
 ];
 
 function extractDate(name) {
@@ -71,7 +90,7 @@ function formatMonth(d) {
   return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
-const files = fs.readdirSync(compressedDir).filter(f => f.toLowerCase().endsWith('.jpg'));
+const files = fs.readdirSync(compressedDir).filter(f => f.toLowerCase().endsWith('.jpg') && !leftOut.includes(f));
 
 const items = files.map(f => {
   const full = path.join(compressedDir, f);
@@ -103,12 +122,12 @@ const mediaItems = items.map(it => {
   const caption = it.pin !== -1 ? pinnedFirst[it.pin].caption
     : it.date ? formatMonth(it.date)
     : genericCaptions[capIdx++ % genericCaptions.length];
-  // file: lets the page pick out one specific photo (the surprise's age banner does)
+  // file: lets the page pick out one specific photo (the age banner and the carousels do)
   return { type: 'image', file: it.file, src: `data:image/jpeg;base64,${b64}`, caption };
 });
 
 // video
-const videoFiles = fs.existsSync(videoDir) ? fs.readdirSync(videoDir).filter(f => f.toLowerCase().endsWith('.mp4')) : [];
+const videoFiles = fs.existsSync(videoDir) ? fs.readdirSync(videoDir).filter(f => f.toLowerCase().endsWith('.mp4') && !leftOut.includes(f)) : [];
 videoFiles.forEach(vf => {
   const vbuf = fs.readFileSync(path.join(videoDir, vf));
   const vb64 = vbuf.toString('base64');

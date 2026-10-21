@@ -225,6 +225,13 @@
   @keyframes tickpop{0%{transform:translateY(-6px); opacity:.4;} 100%{transform:translateY(0); opacity:1;}}
   .ticket-seg .lbl{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-top:6px; display:block;}
   #hero .sub{font-size:15.5px; max-width:44ch;}
+  /* the line under the countdown, typed out. The untyped rest keeps its place
+     (invisibly) so words appear where they end up and nothing below moves. The
+     cursor is an empty inline, not an inline-block, so it can't add a line
+     break mid-word; its bar is drawn by ::after. */
+  #hero-line .untyped{visibility:hidden;}
+  #hero-line .cursor{position:relative;}
+  #hero-line .cursor::after{content:""; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--rose); animation:blink 1s step-start infinite;}
 
   /* ---------- section headers ---------- */
   .sec-head{display:flex; flex-direction:column; gap:10px; margin-bottom:44px; text-align:center; align-items:center;}
@@ -248,9 +255,12 @@
     .story-wrap{flex-direction:column;}
     .story{flex:none; width:100%;}
   }
-  /* the poem under the story, her photo beside it (above it on phones). The
-     wrap is right-to-left, so the photo sits on the right, opposite the story's. */
+  /* the poems under the story, photos beside them (above them on phones). Every
+     other wrap is right-to-left, putting its photos on the right, so the sides
+     alternate down the page. */
   .poem-wrap{display:flex; align-items:flex-start; justify-content:center; gap:clamp(28px,5vw,56px); max-width:880px; margin:0 auto 64px;}
+  /* a poem shorter than its photos sits level with their middle */
+  .poem-wrap.short{align-items:center;}
   /* sticky so the photo stays beside the couplets while they scroll past */
   .polaroid.poem-photo{flex:0 0 auto; width:min(280px,72vw); margin:0; --r:3deg; cursor:default; position:sticky; top:calc(var(--nav-h) + 32px);}
   .polaroid.poem-photo img{aspect-ratio:auto;}
@@ -261,12 +271,39 @@
   .bayt{margin:0 0 18px; max-width:none; font-size:inherit; line-height:2; color:inherit;}
   .bayt span{display:block;}
   .bayt span + span{text-align:end;}
-  /* wide enough for the halves side by side, the way a couplet is printed */
-  @media (min-width:900px){
+  /* wide enough for the halves side by side, the way a couplet is printed.
+     From 930px each column fits the longest half (فقُمْ واصنعِ الشايَ…, about
+     250px), and nowrap keeps a half from ever breaking onto a second line. */
+  @media (min-width:930px){
     .poem{max-width:24em;}
-    .bayt{display:grid; grid-template-columns:1fr 1fr; column-gap:1.5em; margin-bottom:8px;}
-    .bayt span, .bayt span + span{text-align:center;}
+    .bayt{display:grid; grid-template-columns:1fr 1fr; column-gap:1em; margin-bottom:8px;}
+    .bayt span, .bayt span + span{text-align:center; white-space:nowrap;}
   }
+  /* a few photos, one at a time, on top of a little pile of prints */
+  .carousel{flex:0 0 auto; width:min(300px,76vw);}
+  .carousel-stack{position:relative;}
+  .carousel-stack .pile{position:absolute; inset:0; background:#fff; border-radius:2px; box-shadow:0 14px 26px -12px var(--shadow);}
+  .carousel-stack .pile:nth-child(1){transform:translate(10px,6px) rotate(5deg);}
+  .carousel-stack .pile:nth-child(2){transform:translate(-8px,8px) rotate(-4deg);}
+  .polaroid.carousel-photo{margin:0; --r:-1.5deg; cursor:default;}
+  .slides{position:relative; aspect-ratio:3/4; overflow:hidden; background:var(--panel-2);}
+  .polaroid .slides img{position:absolute; inset:0; height:100%; aspect-ratio:auto; opacity:0; transition:opacity .7s ease;}
+  .polaroid .slides img.active{opacity:1;}
+  /* square, for a carousel mixing landscape photos in with portrait ones */
+  .carousel.square .slides{aspect-ratio:1/1;}
+  /* 32px up from the middle: the frame's bottom border is 30px deeper than its top */
+  .carousel-btn{
+    position:absolute; top:calc(50% - 32px); z-index:1; width:34px; height:34px; padding:0 0 3px; border-radius:50%; border:none;
+    background:rgba(0,0,0,.45); color:#fff; font-size:24px; line-height:1; display:flex; align-items:center; justify-content:center;
+    opacity:.85; transition:opacity .2s, background .2s;
+  }
+  .carousel-btn:hover{opacity:1; background:rgba(0,0,0,.65);}
+  .carousel-btn.prev{left:18px;}
+  .carousel-btn.next{right:18px;}
+  .carousel-dots{display:flex; justify-content:center; gap:4px; margin-top:22px;}
+  .carousel-dots button{width:24px; height:24px; padding:0; border:none; background:none; display:flex; align-items:center; justify-content:center;}
+  .carousel-dots button::before{content:""; width:8px; height:8px; border-radius:50%; background:color-mix(in srgb, var(--ink) 25%, transparent); transition:background .3s, transform .3s;}
+  .carousel-dots button[aria-current="true"]::before{background:var(--rose); transform:scale(1.3);}
   @media (max-width:720px){
     .poem-wrap{flex-direction:column; align-items:center;}
     .polaroid.poem-photo{position:relative; top:auto;}
@@ -315,62 +352,22 @@
   #lb-close{position:absolute; top:18px; right:22px; background:none; border:none; color:#f3e9e0; font-size:26px; opacity:.7;}
   #lb-close:hover{opacity:1;}
 
-  /* ---------- vault ---------- */
-  #vault{text-align:center;}
-  .vault-box{
-    max-width:480px; margin:0 auto; background:var(--panel); border:1px solid var(--line); border-radius:8px;
-    padding:40px 32px; box-shadow:0 24px 50px -24px var(--shadow); position:relative; overflow:hidden;
-  }
-  .vault-lock{font-size:34px; margin-bottom:14px;}
-  .vault-box h3{font-size:22px; margin-bottom:10px;}
-  .vault-count{
-    display:flex; gap:10px; justify-content:center; margin:18px 0; font-family:'Space Mono',monospace;
-  }
-  .vault-count div{background:var(--panel-2); border-radius:4px; padding:8px 12px; font-size:15px; min-width:52px;}
-  .vault-count span{display:block; font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); margin-top:2px;}
-  .vault-btn{margin-top:10px; padding:12px 22px; border-radius:3px; border:1px solid var(--gold); background:none; color:var(--gold-strong); font-size:13px; letter-spacing:.04em;}
-  .vault-btn:disabled{opacity:.4; cursor:not-allowed;}
-  .vault-btn:not(:disabled):hover{background:var(--gold); color:var(--panel);}
-  .vault-unlocked .vault-body{font-size:15.5px; line-height:1.85; white-space:pre-wrap; text-align:left; margin-top:12px;}
-  .vault-body .cursor, .story .cursor{display:inline-block; width:2px; height:1em; background:var(--rose); vertical-align:-2px; margin-left:1px; animation:blink 1s step-start infinite;}
+  /* the story's typing cursor */
+  .story .cursor{display:inline-block; width:2px; height:1em; background:var(--rose); vertical-align:-2px; margin-left:1px; animation:blink 1s step-start infinite;}
   @keyframes blink{50%{opacity:0;}}
 
-  /* ---------- surprise (appears on the 22nd) ---------- */
-  #surprise{text-align:center;}
-  .gift{
-    position:relative; display:block; width:176px; height:160px; margin:0 auto; padding:0;
-    background:none; border:none; transition:transform .25s ease;
-  }
-  .gift:hover{transform:translateY(-4px) rotate(-1.5deg);}
-  .gift-box{
-    position:absolute; left:12px; right:12px; bottom:0; height:104px; border-radius:0 0 6px 6px;
-    background:var(--rose); box-shadow:0 24px 36px -20px var(--shadow);
-  }
-  .gift-lid{
-    position:absolute; left:0; right:0; top:26px; height:34px; border-radius:5px; z-index:2;
-    background:color-mix(in srgb, var(--rose) 80%, black);
-    transition:transform .5s cubic-bezier(.3,.7,.2,1), opacity .35s ease .15s;
-  }
-  .gift-box::before, .gift-lid::before{content:""; position:absolute; top:0; bottom:0; left:50%; width:24px; margin-left:-12px; background:var(--gold);}
-  .gift-bow::before, .gift-bow::after{content:""; position:absolute; bottom:100%; width:34px; height:26px; border:7px solid var(--gold);}
-  .gift-bow::before{right:50%; border-radius:50% 50% 0 50%; transform:rotate(12deg); transform-origin:bottom right;}
-  .gift-bow::after{left:50%; border-radius:50% 50% 50% 0; transform:rotate(-12deg); transform-origin:bottom left;}
-  .gift.open .gift-lid{transform:translateY(-52px) rotate(-12deg); opacity:0;}
-  .gift-hint{margin-top:18px; font-family:'Space Mono',monospace; font-size:12.5px; color:var(--ink-soft);}
-  .surprise-note{
-    max-width:520px; margin:0 auto; background:var(--panel); border:1px solid var(--line); border-radius:8px;
-    padding:40px 32px; box-shadow:0 24px 50px -24px var(--shadow); text-align:left;
-  }
-  .surprise-note h3{font-size:22px; margin-bottom:14px; text-align:center;}
+  /* ---------- age banner (under the countdown) ---------- */
   /* her age with her photo between the digits — the layout of the 2021 birthday page */
-  .age-banner{display:flex; align-items:center; justify-content:center; gap:clamp(10px,3vw,18px); margin-bottom:20px;}
-  .age-banner span{font-family:'Fraunces',serif; font-weight:400; font-size:clamp(76px,22vw,116px); line-height:1; color:var(--rose);}
-  .age-banner img{
-    width:clamp(84px,24vw,112px); aspect-ratio:1/1; border-radius:50%; object-fit:cover;
-    border:3px solid var(--panel); box-shadow:0 0 0 1px var(--line), 0 14px 26px -12px var(--shadow);
+  .age-banner{display:flex; align-items:center; justify-content:center; gap:clamp(12px,3vw,24px);}
+  .age-banner span{font-family:'Fraunces',serif; font-weight:400; font-size:clamp(116px,32vw,200px); line-height:1; color:var(--rose);}
+  .age-photo{
+    position:relative; flex:0 0 auto; width:clamp(136px,38vw,210px); aspect-ratio:1/1; border-radius:50%; overflow:hidden;
+    border:4px solid var(--panel); box-shadow:0 0 0 1px var(--line), 0 18px 32px -14px var(--shadow); background:var(--panel-2);
   }
-  .surprise-body{font-size:15.5px; line-height:1.85; color:var(--ink); white-space:pre-wrap;}
-  .letter-sign{margin-top:24px; font-family:'Fraunces',serif; font-style:italic; color:var(--ink-soft);}
+  /* the incoming photo fades in on top; the outgoing one waits until it has
+     before fading, so the circle never dips to empty in between */
+  .age-photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .8s ease .8s;}
+  .age-photo img.active{opacity:1; z-index:1; transition-delay:0s;}
 
   /* ---------- footer ---------- */
   footer{text-align:center; padding:64px 24px 80px; color:var(--ink-soft); font-family:'Fraunces',serif; font-style:italic; font-size:17px;}
@@ -407,9 +404,7 @@
   <div class="nav-brand"><span class="heart">&#9825;</span><span class="full">Aliaa's Keepsake Box</span></div>
   <div class="nav-count mono" id="nav-count">--d --h --m --s</div>
   <div class="nav-links">
-    <a href="#surprise" data-sec="surprise" id="nav-surprise" hidden>Surprise</a>
     <a href="#memories" data-sec="memories">Memories</a>
-    <a href="#vault" data-sec="vault">The 22nd</a>
   </div>
 </nav>
 
@@ -425,39 +420,19 @@
       <div class="ticket-seg"><span class="num mono" id="cd-mins">00</span><span class="lbl">Minutes</span></div>
       <div class="ticket-seg"><span class="num mono" id="cd-secs">00</span><span class="lbl">Seconds</span></div>
     </div>
-    <p class="sub" id="hero-sub">Every one of those seconds is bringing us closer to celebrating you &mdash; scroll on, there's a lot more waiting below.</p>
-  </section>
-
-  <section id="surprise" hidden>
-    <div class="sec-head reveal">
-      <div class="eyebrow">Saved for the 22nd</div>
-      <h2>Something that waited for your birthday</h2>
-      <p>This part of the box stayed hidden until the 22nd. Go on &mdash; open it.</p>
+    <div class="age-banner" id="age-banner" role="img" hidden>
+      <span id="age-first"></span>
+      <div class="age-photo" id="age-photo"><img alt="" /><img alt="" /></div>
+      <span id="age-last"></span>
     </div>
-    <div id="gift-wrap">
-      <button class="gift" id="gift" aria-label="Open your birthday surprise">
-        <span class="gift-box"></span>
-        <span class="gift-lid"><span class="gift-bow"></span></span>
-      </button>
-      <div class="gift-hint">Tap to open</div>
-    </div>
-    <div class="surprise-note" id="surprise-note" hidden>
-      <div class="age-banner" id="age-banner" role="img" hidden>
-        <span id="age-first"></span>
-        <img id="age-photo" alt="" />
-        <span id="age-last"></span>
-      </div>
-      <h3 id="surprise-title"></h3>
-      <div class="surprise-body" id="surprise-body"></div>
-      <div class="letter-sign">&mdash; Always, Ahmed</div>
-    </div>
+    <p class="sub" id="hero-line">Everything I have and everything I am is yours. Happy birthday, my lovely wife.</p>
   </section>
 
   <section id="memories">
     <div class="sec-head reveal">
       <div class="eyebrow">A corkboard of us</div>
       <h2>Memories, pinned up</h2>
-      <p>Little pieces from the very start up to now &mdash; click any one to see it properly.</p>
+      <p>Little pieces from the very start up to now.</p>
     </div>
     <div class="story-wrap reveal">
       <figure class="polaroid story-photo" id="story-photo" hidden>
@@ -482,7 +457,6 @@
         <p class="bayt reveal"><span>رأيتُكِ تُلقينَ عنكِ الكمامةَ</span><span>فغابَ الكلامُ وضاعَ الصدى</span></p>
         <p class="bayt reveal"><span>كأنَّ ملاكًا يُزيحُ النقابَ</span><span>فأشرقَ وجهٌ كثلجٍ بدا</span></p>
         <p class="bayt reveal"><span>وعيناكِ كالليلِ، أنظرُ فيها</span><span>فأهوي إلى هُوّةٍ لا مدى</span></p>
-        <p class="bayt reveal"><span>خلافاتُنا كلُّها غيرةٌ</span><span>هي الحبُّ يأبى بأن يُجحَدا</span></p>
         <p class="bayt reveal"><span>نُغلّقُ بابًا بغضبٍ شديدٍ</span><span>ونفتحُهُ قبلَ أن يُوصَدا</span></p>
         <p class="bayt reveal"><span>وكم قلتُ: هذا الهوى لن يدومَ</span><span>فخابت ظنوني وقلبي اهتدى</span></p>
         <p class="bayt reveal"><span>وفي كلِّ ليلٍ أقولُ: كفى</span><span>فيأتي صباحُكِ مثلَ الندى</span></p>
@@ -490,21 +464,143 @@
         <p class="bayt reveal"><span>فعلياءُ، كلُّ الخصامِ القديمِ</span><span>فِداكِ، وعمري بكِ المُبتدا</span></p>
       </div>
     </div>
+    <div class="poem-wrap short reveal">
+      <div class="carousel" id="carousel-childhood" role="group" aria-roledescription="carousel" aria-label="Aliaa as a little girl" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem" dir="rtl" lang="ar">
+        <h3>طفلةُ المانجا</h3>
+        <p class="bayt reveal"><span>أرى طفلةً في المياهِ تغنّي</span><span>ومانجا تسيلُ على وجنتيها</span></p>
+        <p class="bayt reveal"><span>تعضُّ وتضحكُ والماءُ يجري</span><span>ويمحو الذي سالَ من راحتيها</span></p>
+        <p class="bayt reveal"><span>ولو ذاقتِ اليومَ مانجا لعادتْ</span><span>صغيرةُ أمسٍ إلى مقلتيها</span></p>
+      </div>
+    </div>
+    <div class="poem-wrap short reveal" dir="rtl" lang="ar">
+      <div class="carousel" id="carousel-tea" dir="ltr" lang="en" role="group" aria-roledescription="carousel" aria-label="Tea after lunch" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem">
+        <h3>شايُ ما بعدَ الغداء</h3>
+        <p class="bayt reveal"><span>إذا ما فرغنا من الأكلِ قالتْ:</span><span>«صنعتُ أنا لكَ هذا الطعاما</span></p>
+        <p class="bayt reveal"><span>فقُمْ واصنعِ الشايَ، دورُكَ»؛ أمضي</span><span>وقد صارَ عتبي لديها ابتساما</span></p>
+        <p class="bayt reveal"><span>ولو كانَ عمري لشايِكِ كوبًا</span><span>لذوّبتُ فيهِ الهوى والغراما</span></p>
+      </div>
+    </div>
+    <div class="poem-wrap short reveal">
+      <div class="carousel square" id="carousel-umrah" role="group" aria-roledescription="carousel" aria-label="Umrah together" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem" dir="rtl" lang="ar">
+        <h3>بداية بالطاعة</h3>
+        <p class="bayt reveal"><span>في أوّلِ العُمرِ الجديدِ تَوجَّهَتْ</span><span>أرواحُنا نحوَ الحَطيمِ وزَمزمِ</span></p>
+        <p class="bayt reveal"><span>لبّيكَ قُلناها معًا وقلوبُنا</span><span>تهفو إلى البيتِ العتيقِ الأعظمِ</span></p>
+        <p class="bayt reveal"><span>ثمَّ ارتحلنا للمدينةِ نرتجي</span><span>قُربَ الحبيبِ مُحمّدٍ ونُسلِّمِ</span></p>
+        <p class="bayt reveal"><span>يا ربِّ فاجعلْ عيشَنا في طاعةٍ</span><span>وارزقْ لنا في الخُلدِ أكرمَ مَقدَمِ</span></p>
+      </div>
+    </div>
+    <div class="poem-wrap short reveal" dir="rtl" lang="ar">
+      <div class="carousel" id="carousel-sea" dir="ltr" lang="en" role="group" aria-roledescription="carousel" aria-label="By the sea" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem">
+        <h3>بحرُ علياء</h3>
+        <p class="bayt reveal"><span>البحرُ مشتاقٌ لنا، وكأنّهُ</span><span>يدعو، وكلُّ الموجِ فيهِ نداءُ</span></p>
+        <p class="bayt reveal"><span>ولنا على هذي الصخورِ حكايةٌ</span><span>وخُطًى، وضِحْكٌ، والهوى أصداءُ</span></p>
+        <p class="bayt reveal"><span>ونظرتُ في عينيكِ ذاتَ عشيّةٍ</span><span>فإذا البحارُ جميعُها زرقاءُ</span></p>
+        <p class="bayt reveal"><span>وأرى بعينيها انعكاسَكَ ساكنًا</span><span>فأقولُ: هذا البحرُ… وهي سماءُ</span></p>
+      </div>
+    </div>
+    <div class="poem-wrap short reveal">
+      <div class="carousel" id="carousel-pluto" role="group" aria-roledescription="carousel" aria-label="The photos from your 23rd birthday page" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem" dir="rtl" lang="ar">
+        <h3>إلى بلوتو</h3>
+        <p class="bayt reveal"><span>إلى بلوتو البعيدِ مضتْ حياتُنا</span><span>أملًا بأنّ الأرضَ تغدو خاليةْ</span></p>
+        <p class="bayt reveal"><span>ما في الوجودِ سوى "آدمَ" و"هيَ"</span><span>نبني من الحبِّ الأعشاشَ العاليةْ</span></p>
+        <p class="bayt reveal"><span>نجمٌ صغيرٌ في الظلامِ معلّقٌ</span><span>لكنّهُ بكِ صارَ شمسًا دافيةْ</span></p>
+        <p class="bayt reveal"><span>نحيا على عشقِ الهوى وحيدَيْنِ</span><span>والريحُ حولَ خُطانا تمضي حانيةْ</span></p>
+        <p class="bayt reveal"><span>ولئن خلا الكونُ الفسيحُ من الورى</span><span>فمعَكِ ما عرفتُ الوحدةَ ثانيةْ</span></p>
+      </div>
+    </div>
+    <div class="poem-wrap short reveal" dir="rtl" lang="ar">
+      <div class="carousel" id="carousel-wife" dir="ltr" lang="en" role="group" aria-roledescription="carousel" aria-label="Ahmed and Aliaa" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem">
+        <h3>إلى زوجتي علياء</h3>
+        <p class="bayt reveal"><span>عَلياءُ يا أُنسَ الحياةِ وسَعدَها</span><span>بِكِ يَزدهي عُمري ويَصفو الماءُ</span></p>
+        <p class="bayt reveal"><span>أُصغي إليكِ بِمُهجتي وبِمَسمَعي</span><span>وأَحِنُّ، إنَّ الحُبَّ فيكِ وَفاءُ</span></p>
+        <p class="bayt reveal"><span>قلبي عنيدٌ في هواكِ فلا يرى</span><span>إلّاكِ، أنتِ المجدُ والعَلياءُ</span></p>
+      </div>
+    </div>
     <div class="corkboard" id="corkboard"></div>
-  </section>
-
-  <section id="vault">
-    <div class="sec-head reveal">
-      <div class="eyebrow">The last one</div>
-      <h2>Open only on the 22nd</h2>
-      <p>This one unlocks itself &mdash; no need to remember to come back, it'll be ready.</p>
-    </div>
-    <div class="vault-box reveal" id="vault-box">
-      <div class="vault-lock" id="vault-icon">&#128274;</div>
-      <h3 id="vault-title">Locked, for now</h3>
-      <div class="vault-count mono" id="vault-count"></div>
-      <p id="vault-hint" style="margin:0 auto;">Come back at midnight on the 22nd, Cairo time, and this will open on its own.</p>
-    </div>
   </section>
 
   <footer>
@@ -591,11 +687,12 @@
     if(pageInited) return;
     pageInited = true;
     safeRun('countdown', setupCountdown);
+    safeRun('hero line', setupHeroLine);
     safeRun('story', setupStory);
     safeRun('poem', setupPoem);
+    safeRun('carousels', setupCarousels);
     safeRun('gallery', buildGallery);
-    safeRun('vault', setupVault);
-    safeRun('surprise', setupSurprise);
+    safeRun('age banner', setupAgeBanner);
     safeRun('nav', setupNav);
     safeRun('reveals', setupReveals);
     safeRun('ambient', function(){ if(!reduceMotion) startAmbient(); else document.getElementById('ambient').remove(); });
@@ -655,9 +752,6 @@
     registerTicker(function(p){
       if(p.done){
         dEl.textContent='00'; hEl.textContent='00'; mEl.textContent='00'; sEl.textContent='00';
-        document.getElementById('hero-sub').textContent = p.today
-          ? "It's the 22nd — happiest birthday, Aliaa!"
-          : "Still celebrating you — happiest birthday, Aliaa!";
         return;
       }
       dEl.textContent = pad(p.d); hEl.textContent = pad(p.h); mEl.textContent = pad(p.m); sEl.textContent = pad(p.s);
@@ -677,6 +771,42 @@
       setTimeout(loop, 1000);
     }
     loop();
+  }
+
+  /* ================= the line under the countdown, typed out ================= */
+  // milliseconds before typing starts, per character, and after a full stop
+  var HERO_LINE_PACE = {start:900, type:55, stop:450};
+
+  // The text itself is in the markup (#hero-line), so it's there in full
+  // without JS or with reduced motion.
+  function setupHeroLine(){
+    var line = document.getElementById('hero-line');
+    var text = line.textContent;
+    if(reduceMotion || !text) return;
+    var shown = document.createElement('span');
+    var cursor = document.createElement('span');
+    var rest = document.createElement('span');
+    cursor.className = 'cursor';
+    rest.className = 'untyped';
+    rest.textContent = text;
+    line.textContent = '';
+    line.appendChild(shown);
+    line.appendChild(cursor);
+    line.appendChild(rest);
+
+    var i = 0;
+    function type(){
+      i++;
+      shown.textContent = text.slice(0, i);
+      rest.textContent = text.slice(i);
+      if(i < text.length){
+        setTimeout(type, text.charAt(i - 1) === '.' ? HERO_LINE_PACE.stop : HERO_LINE_PACE.type);
+      } else {
+        cursor.remove();
+        rest.remove();
+      }
+    }
+    setTimeout(type, HERO_LINE_PACE.start);
   }
 
   /* ================= nav: reveal on scroll + scrollspy ================= */
@@ -729,7 +859,8 @@
   var MEDIA = /*__MEDIA_ITEMS_JSON__*/;
 
   // what's pinned on the board (and paged through in the lightbox): MEDIA
-  // minus the photos shown beside the story and the poem. Filled in by buildGallery.
+  // minus the photos shown beside the story and the poems, carousels included.
+  // Filled in by buildGallery.
   var BOARD = [];
 
   var rotations = [-3,2,-2,3,-4,1.5,4,-1.5,2.5,-2.5,3.5,-3.5];
@@ -737,7 +868,9 @@
   function buildGallery(){
     var board = document.getElementById('corkboard');
     var frag = document.createDocumentFragment();
-    BOARD = MEDIA.filter(function(m){ return m.file !== STORY_PHOTO && m.file !== POEM_PHOTO; });
+    BOARD = MEDIA.filter(function(m){
+      return m.file !== STORY_PHOTO && m.file !== POEM_PHOTO && !inCarousel(m.file);
+    });
     BOARD.forEach(function(item, i){
       var el = document.createElement('button');
       el.className = 'polaroid';
@@ -808,35 +941,6 @@
     if(ev.key === 'ArrowLeft') document.getElementById('lb-prev').click();
     if(ev.key === 'ArrowRight') document.getElementById('lb-next').click();
   });
-
-  /* ================= typewriter ================= */
-  // milliseconds per character, and per full stop / line break
-  var TYPE_PACE = {ch:16, stop:90};
-
-  function typeText(target, text){
-    var pace = TYPE_PACE;
-    clearTimeout(target.typeTimer);
-    target.innerHTML = '';
-    if(reduceMotion){ target.textContent = text; return; }
-    var i = 0;
-    var span = document.createElement('span');
-    var cursor = document.createElement('span');
-    cursor.className = 'cursor';
-    target.appendChild(span);
-    target.appendChild(cursor);
-    function step(){
-      if(i < text.length){
-        span.textContent += text.charAt(i);
-        i++;
-        var ch = text.charAt(i-1);
-        var delay = ch === '.' || ch === '\n' ? pace.stop : pace.ch;
-        target.typeTimer = setTimeout(step, delay);
-      } else {
-        cursor.remove();
-      }
-    }
-    step();
-  }
 
   /* ================= story (typed beside the first photo) ================= */
   // The photo from the first time Ahmed saw her (a file from media/compressed),
@@ -945,85 +1049,239 @@
     document.getElementById('poem-photo').hidden = false;
   }
 
-  /* ================= vault (auto-unlocks on the 22nd) ================= */
-  var VAULT_LETTER = "There's nothing left to wait for now — it's your day.\n\nHappy birthday, Aliaa. Twenty-eight looks good on you already. Every photo above was just a long way of saying the same thing: I hope today hands you every good thing you deserve, and I'm endlessly glad I get to love you through all the years still coming.";
+  /* ================= carousels (beside the short poems) ================= */
+  // Each carousel's photos (files from media/compressed), keyed by the id of
+  // its element in the markup, shown one at a time in this order and left off
+  // the board below. Their captions come from scripts/build.js; the poems
+  // beside them are in the markup.
+  var CAROUSELS = {
+    // beside طفلةُ المانجا
+    "carousel-childhood": [
+      "819e2223-0910-4897-bf84-58cc72c95e4b.jpg",
+      "549ab911-0665-422d-83b4-79c37554ce84.jpg",
+      "ae74627a-ced9-4c45-8cd3-de150aa6f326.jpg"
+    ],
+    // beside شايُ ما بعدَ الغداء
+    "carousel-tea": [
+      "Screenshot_2024-08-12-01-39-14-023_com_whatsapp-edit.jpg",
+      "IMG_20250117_064428.jpg"
+    ],
+    // beside بداية بالطاعة: Makkah in ihram, then Madinah
+    "carousel-umrah": [
+      "photo_5780788018209212989_y.jpg",
+      "photo_5780788018209212920_y.jpg",
+      "photo_5780788018209212893_y.jpg",
+      "photo_5780788018209212931_y.jpg",
+      "photo_5780788018209212982_y.jpg",
+      "photo_5780788018209212977_y.jpg",
+      "photo_5780788018209212902_y.jpg",
+      "IMG_20250109_031603.jpg",
+      "IMG_2304__1_.jpg"
+    ],
+    // beside بحرُ علياء, ending on the sunset over the rocks
+    "carousel-sea": [
+      "photo_5904292311066595718_y.jpg",
+      "photo_5904292311066595699_y.jpg",
+      "photo_5944982642250335177_y.jpg",
+      "9761b788-1024-4eb8-b1d5-1bfa67e51d7d.jpg",
+      "gift2021_02.jpg",
+      "WhatsApp_Image_2026-09-04_at_10_07_11_AM.jpg"
+    ],
+    // beside إلى بلوتو: the rest of the 2021 birthday page's photos, in its order
+    "carousel-pluto": [
+      "gift2021_01.jpg",
+      "gift2021_04.jpg",
+      "gift2021_05.jpg",
+      "gift2021_06.jpg",
+      "gift2021_07.jpg",
+      "gift2021_08.jpg",
+      "gift2021_09.jpg",
+      "gift2021_11.jpg",
+      "gift2021_12.jpg",
+      "gift2021_13.jpg",
+      "gift2021_14.jpg",
+      "gift2021_15.jpg"
+    ],
+    // beside إلى زوجتي علياء: the invitation and the wedding, on to now
+    "carousel-wife": [
+      "IMG-20240612-WA0026__1_.jpg",
+      "Screenshot_2024-10-25-21-46-05-660_com_miui_gallery-edit.jpg",
+      "IMG-20241109-WA0117.jpg",
+      "8F7FA998-4110-4951-A6CE-A890A09BCA8E.jpg",
+      "photo_5904292311066595717_y.jpg",
+      "photo_5944982642250335202_y.jpg",
+      "IMG_20250402_002808.jpg",
+      "WhatsApp_Image_2026-09-04_at_10_06_43_AM.jpg"
+    ]
+  };
+  // milliseconds each photo stays up before a carousel turns by itself
+  var CAROUSEL_PACE = 4500;
 
-  function setupVault(){
-    var box = document.getElementById('vault-box');
-    var icon = document.getElementById('vault-icon');
-    var title = document.getElementById('vault-title');
-    var hint = document.getElementById('vault-hint');
-    var countEl = document.getElementById('vault-count');
-    var unlocked = false;
+  function inCarousel(file){
+    return Object.keys(CAROUSELS).some(function(id){ return CAROUSELS[id].indexOf(file) !== -1; });
+  }
 
-    registerTicker(function(p){
-      if(p.done && !unlocked){
-        unlocked = true;
-        box.classList.add('vault-unlocked');
-        icon.textContent = '💌';
-        title.textContent = 'For October 22nd, at last';
-        countEl.remove();
-        hint.outerHTML = '<div class="vault-body" id="vault-body"></div>';
-        typeText(document.getElementById('vault-body'), VAULT_LETTER);
-        return;
-      }
-      if(unlocked) return;
-      countEl.innerHTML =
-        '<div>' + pad(p.d) + '<span>days</span></div>' +
-        '<div>' + pad(p.h) + '<span>hrs</span></div>' +
-        '<div>' + pad(p.m) + '<span>min</span></div>' +
-        '<div>' + pad(p.s) + '<span>sec</span></div>';
+  function setupCarousels(){
+    Object.keys(CAROUSELS).forEach(function(id){
+      safeRun('carousel ' + id, function(){ setupCarousel(document.getElementById(id), CAROUSELS[id]); });
     });
   }
 
-  /* ================= birthday surprise (hidden until the 22nd) ================= */
-  // What she finds inside the gift. The section and its nav link stay hidden
-  // until the birthday arrives, and this text is only put on the page once
-  // she opens the box.
-  // photo: the file (from media/compressed) shown between the digits of her
-  // age above the note — the photo and layout the 2021 birthday page used.
-  var SURPRISE = {
-    title: "Happy birthday, Aliaa",
-    photo: "gift2021_05.jpg",
-    body: "I kept this part hidden until the day itself, so there'd be one thing in here you couldn't peek at early.\n\nYou might recognize the top of this note. It's how the page I made for your twenty-third looked, same photo and all, with one number changed.\n\nHappy twenty-eighth. Today is yours, start to finish, and I'm so glad I get to celebrate you.\n\nOne more thing: the letter near the bottom of this page has unlocked too. Go read it."
-  };
+  function setupCarousel(root, files){
+    var photos = files.map(function(file){
+      return MEDIA.filter(function(m){ return m.file === file; })[0];
+    }).filter(Boolean);
+    if(!photos.length) return;
 
-  function setupSurprise(){
-    var section = document.getElementById('surprise');
-    var gift = document.getElementById('gift');
-    var shown = false;
+    var slides = root.querySelector('.slides');
+    var cap = root.querySelector('.cap');
+    var dots = root.querySelector('.carousel-dots');
+    var prev = root.querySelector('.carousel-btn.prev');
+    var next = root.querySelector('.carousel-btn.next');
+    var imgs = [], dotBtns = [], current = 0;
 
-    registerTicker(function(p){
-      if(!p.done || shown) return;
-      shown = true;
-      section.hidden = false;
-      document.getElementById('nav-surprise').hidden = false;
+    photos.forEach(function(photo, i){
+      var img = document.createElement('img');
+      img.src = photo.src; img.alt = photo.caption;
+      slides.appendChild(img);
+      imgs.push(img);
+
+      var dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', 'Photo ' + (i + 1) + ' of ' + photos.length);
+      dot.addEventListener('click', function(){ show(i); restart(); });
+      dots.appendChild(dot);
+      dotBtns.push(dot);
     });
 
-    gift.addEventListener('click', function(){
-      if(gift.classList.contains('open')) return;
-      gift.classList.add('open');
-      if(!reduceMotion){
-        var r = gift.getBoundingClientRect();
-        burstConfetti(r.left + r.width/2, r.top + r.height/2);
-      }
-      setTimeout(function(){
-        var photo = MEDIA.filter(function(m){ return m.file === SURPRISE.photo; })[0];
-        if(photo){
-          var age = String(turningAge());
-          var banner = document.getElementById('age-banner');
-          document.getElementById('age-first').textContent = age.slice(0, -1);
-          document.getElementById('age-last').textContent = age.slice(-1);
-          document.getElementById('age-photo').src = photo.src;
-          banner.setAttribute('aria-label', 'Turning ' + age);
-          banner.hidden = false;
-        }
-        document.getElementById('surprise-title').textContent = SURPRISE.title;
-        document.getElementById('surprise-body').textContent = SURPRISE.body;
-        document.getElementById('gift-wrap').hidden = true;
-        document.getElementById('surprise-note').hidden = false;
-      }, reduceMotion ? 0 : 520);
+    function show(i){
+      current = (i + photos.length) % photos.length;
+      imgs.forEach(function(img, j){
+        img.classList.toggle('active', j === current);
+        img.setAttribute('aria-hidden', j === current ? 'false' : 'true');
+      });
+      dotBtns.forEach(function(d, j){ d.setAttribute('aria-current', j === current ? 'true' : 'false'); });
+      cap.textContent = photos[current].caption;
+    }
+
+    // It only turns by itself while it's on screen and nobody is pointing at
+    // or using it, and never with reduced motion.
+    var timer = null, visible = false, held = false;
+    function restart(){
+      clearInterval(timer);
+      timer = null;
+      if(reduceMotion || !visible || held || photos.length < 2) return;
+      timer = setInterval(function(){ show(current + 1); }, CAROUSEL_PACE);
+    }
+
+    prev.addEventListener('click', function(){ show(current - 1); restart(); });
+    next.addEventListener('click', function(){ show(current + 1); restart(); });
+    root.addEventListener('keydown', function(ev){
+      if(ev.key === 'ArrowLeft'){ show(current - 1); restart(); }
+      if(ev.key === 'ArrowRight'){ show(current + 1); restart(); }
     });
+    root.addEventListener('mouseenter', function(){ held = true; restart(); });
+    root.addEventListener('mouseleave', function(){ held = false; restart(); });
+    root.addEventListener('focusin', function(){ held = true; restart(); });
+    root.addEventListener('focusout', function(){ held = false; restart(); });
+
+    // swipe on phones
+    var startX = null;
+    slides.addEventListener('touchstart', function(ev){ startX = ev.touches[0].clientX; }, {passive:true});
+    slides.addEventListener('touchend', function(ev){
+      if(startX === null) return;
+      var dx = ev.changedTouches[0].clientX - startX;
+      startX = null;
+      if(Math.abs(dx) > 40){ show(current + (dx < 0 ? 1 : -1)); restart(); }
+    });
+
+    if(photos.length < 2){
+      prev.hidden = true;
+      next.hidden = true;
+      dots.hidden = true;
+    }
+    show(0);
+    root.hidden = false;
+
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(entries){
+        visible = entries[0].isIntersecting;
+        restart();
+      }, {threshold:0.5}).observe(root);
+    } else {
+      visible = true;
+      restart();
+    }
+  }
+
+  /* ================= age banner (under the countdown) ================= */
+  // The photos (files from media/compressed) that take turns between the
+  // digits of the age she's turning, under the countdown — the layout the
+  // 2021 birthday page used. They're the page's photos that sit well in a
+  // circle: the first one, then her life in order. Without any, the banner
+  // stays hidden.
+  var AGE_PHOTOS = [
+    "gift2021_06.jpg",
+    "819e2223-0910-4897-bf84-58cc72c95e4b.jpg",
+    "ae74627a-ced9-4c45-8cd3-de150aa6f326.jpg",
+    "gift2021_02.jpg",
+    "gift2021_04.jpg",
+    "gift2021_05.jpg",
+    "gift2021_08.jpg",
+    "gift2021_09.jpg",
+    "gift2021_11.jpg",
+    "gift2021_13.jpg",
+    "gift2021_14.jpg",
+    "gift2021_15.jpg",
+    "IMG-20241109-WA0117.jpg",
+    "8F7FA998-4110-4951-A6CE-A890A09BCA8E.jpg",
+    "photo_5780788018209212920_y.jpg",
+    "photo_5780788018209212982_y.jpg",
+    "photo_5780788018209212977_y.jpg",
+    "IMG_2304__1_.jpg",
+    "photo_5904292311066595718_y.jpg",
+    "photo_5944982642250335177_y.jpg",
+    "WhatsApp_Image_2026-09-04_at_10_07_11_AM.jpg",
+    "WhatsApp_Image_2026-09-04_at_10_05_21_AM.jpg"
+  ];
+  // milliseconds each photo stays up before the next one fades in
+  var AGE_PACE = 3000;
+
+  function setupAgeBanner(){
+    var photos = AGE_PHOTOS.map(function(file){
+      return MEDIA.filter(function(m){ return m.file === file; })[0];
+    }).filter(Boolean);
+    if(!photos.length) return;
+    var age = String(turningAge());
+    var banner = document.getElementById('age-banner');
+    var imgs = document.querySelectorAll('#age-photo img');
+    document.getElementById('age-first').textContent = age.slice(0, -1);
+    document.getElementById('age-last').textContent = age.slice(-1);
+    imgs[0].src = photos[0].src;
+    imgs[0].classList.add('active');
+    banner.setAttribute('aria-label', 'Turning ' + age);
+    banner.hidden = false;
+    if(photos.length < 2 || reduceMotion) return;
+
+    // Two images take turns: the hidden one loads the next photo, then fades
+    // in over the visible one once it's decoded, so it never appears half-drawn.
+    // A tick that comes while the last photo is still decoding is skipped.
+    var current = 0, front = 0, busy = false;
+    setInterval(function(){
+      if(busy) return;
+      busy = true;
+      current = (current + 1) % photos.length;
+      var back = 1 - front;
+      var next = imgs[back];
+      next.src = photos[current].src;
+      var ready = next.decode ? next.decode().catch(function(){}) : Promise.resolve();
+      ready.then(function(){
+        next.classList.add('active');
+        imgs[front].classList.remove('active');
+        front = back;
+        busy = false;
+      });
+    }, AGE_PACE);
   }
 
   /* ================= confetti burst on the age tag ================= */

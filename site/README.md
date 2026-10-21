@@ -22,17 +22,20 @@ Double-click `dist/index.html` (or open it from a browser's File > Open) — it'
 
 ## What happens on the 22nd
 
-At midnight on October 22 (Cairo time) the page switches to its birthday version: the countdown reads zero, the letter in "The 22nd" section unlocks, and a "Surprise" section with a gift box to open appears right under the countdown (plus a "Surprise" link in the nav). Before that, the section and its link are hidden. The birthday version stays up through October 28, then the page goes back to counting down to the next birthday.
+At midnight on October 22 (Cairo time) the page switches to its birthday version: the countdown reads zero and the nav shows "It's today!". The birthday version stays up through October 28, then the page goes back to counting down to the next birthday.
 
 Open `dist/preview-birthday.html` to see it before the day.
 
 ## To change things
 
 - **Family PIN**: search for `FAMILY_PIN` near the top of the `<script>` in `src/template.html`. It's currently `221098` (22-10-98).
-- **Birthday surprise**: the `SURPRISE` object in the same file — `{ title, photo, body }`, shown when the gift box is opened. `photo` is a file name from `media/compressed/`; it appears between the two digits of her age at the top of the note, the way the 2021 page showed it. If the file isn't found, the note just shows without that banner.
+- **The line under the countdown**: in the markup, `#hero-line` in `src/template.html`. It types itself out when the page opens; the speeds are `HERO_LINE_PACE` in the `<script>`.
+- **The age under the countdown**: the age she's turning, with a photo between its two digits, the way the 2021 page showed it. The photo changes every `AGE_PACE` milliseconds (3 seconds), going through `AGE_PHOTOS` in the same file, in that order — file names from `media/compressed/`, picked because they sit well in a circle. If none are found, the banner is left off.
 - **The typed lines above the photos**: `STORY_LINES` in the same file, typed in that order, each erased before the next (the last one stays on screen), beside the photo named in `STORY_PHOTO` (the first time Ahmed saw her). That photo is left off the board so it doesn't show twice; its caption is in `pinnedFirst` in `scripts/build.js`. The typing speeds are in `STORY_PACE`.
 - **The poem under the story**: its couplets are in the markup, in the `.poem` block right after the story, each `<p class="bayt">` holding its two halves. The photo beside it is `POEM_PHOTO` in the `<script>`; like the story's photo, it's left off the board.
-- **Photo captions and order**: `pinnedFirst` in `scripts/build.js` lists the photos that open the board, each with its own caption. Any other photo with a date in its file name is captioned with its month; the rest get a caption from `genericCaptions`.
+- **The short poems and their carousels** (طفلةُ المانجا, شايُ ما بعدَ الغداء, بداية بالطاعة, بحرُ علياء, إلى بلوتو, then إلى زوجتي علياء, under the first poem): each poem is in the markup, in its `.poem-wrap` block next to its carousel. The photos each carousel turns through are in `CAROUSELS` in the `<script>`, keyed by the carousel's id, in that order, and are left off the board. Their captions are the usual ones from `scripts/build.js` (`pinnedFirst`, or the month for dated photos). How long each photo stays up is `CAROUSEL_PACE`. To add another, copy a `.poem-wrap.short` block with a new carousel id and add that id to `CAROUSELS`. A carousel's frame is portrait (3:4) unless it has the `square` class, which the umrah one uses since some of its photos are landscape.
+- **Photo captions and order**: `pinnedFirst` in `scripts/build.js` gives particular photos their own caption; all of those are now beside the story or in a carousel rather than on the board. Any other photo with a date in its file name is captioned with its month; the rest get a caption from `genericCaptions`. The board shows dated photos oldest first, then the undated ones.
+- **Leaving a photo off the page**: add its `media/compressed/` file name (or a video's `media/video/` file name) to `leftOut` in `scripts/build.js`. Don't just delete the file — `resize.ps1` would bring it back from the original. Every photo that isn't beside the story or a poem is currently left out, so the board under the poems is empty; a new photo that's neither left out nor in a carousel shows up there.
 - **How long the birthday version stays up**: `BIRTHDAY_MODE_DAYS` in the same file (7 = the 22nd through the 28th).
 - After any edit to `src/template.html`, `media/`, or new photos, re-run:
   ```
