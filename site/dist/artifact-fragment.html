@@ -2,47 +2,22 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Amiri:wght@400;700&display=swap');
 
+  /* midnight and gold: one dark palette, the same whatever the device's
+     light/dark setting, so everyone sees the page the same way */
   :root{
-    --ground:#f6ecdd;
-    --panel:#fffaf2;
-    --panel-2:#efe1cb;
-    --ink:#2c1a30;
-    --ink-soft:#6e5a71;
-    --gold:#a97f34;
-    --gold-strong:#8a6526;
-    --rose:#c85a72;
-    --rose-soft:#e8b3bf;
-    --line: rgba(44,26,48,0.16);
-    --shadow: rgba(44,26,48,0.18);
+    color-scheme:dark;
+    --ground:#121528;
+    --panel:#1b1f36;
+    --panel-2:#1f2440;
+    --ink:#f5ecdc;
+    --ink-soft:#c3bdd0;
+    --gold:#d6ae62;
+    --gold-strong:#e9c47f;
+    --rose:#ef9fb0;
+    --rose-soft:#5c3a4f;
+    --line: rgba(245,236,220,0.14);
+    --shadow: rgba(0,0,0,0.5);
     --nav-h: 60px;
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --ground:#1b1220;
-      --panel:#241a2c;
-      --panel-2:#2e2135;
-      --ink:#f3e9e0;
-      --ink-soft:#cbb8c9;
-      --gold:#caa15d;
-      --gold-strong:#e0ba7c;
-      --rose:#e8899b;
-      --rose-soft:#7a4a55;
-      --line: rgba(243,233,224,0.14);
-      --shadow: rgba(0,0,0,0.45);
-    }
-  }
-  :root[data-theme="dark"]{
-    --ground:#1b1220;
-    --panel:#241a2c;
-    --panel-2:#2e2135;
-    --ink:#f3e9e0;
-    --ink-soft:#cbb8c9;
-    --gold:#caa15d;
-    --gold-strong:#e0ba7c;
-    --rose:#e8899b;
-    --rose-soft:#7a4a55;
-    --line: rgba(243,233,224,0.14);
-    --shadow: rgba(0,0,0,0.45);
   }
 
   *{box-sizing:border-box;}
@@ -227,7 +202,7 @@
   /* a photo behind a cell (set by JS from COUNTDOWN_PHOTOS), darkened by a
      scrim so the white numbers stay readable over any photo */
   .ticket-seg.has-photo{padding-top:34px; padding-bottom:30px; min-width:116px; background-size:cover; background-position:center;}
-  .ticket-seg.has-photo::before{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(28,14,32,.28), rgba(28,14,32,.72));}
+  .ticket-seg.has-photo::before{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(18,21,40,.28), rgba(18,21,40,.72));}
   .ticket-seg.has-photo .num, .ticket-seg.has-photo .lbl{position:relative;}
   .ticket-seg.has-photo .num{color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.5);}
   .ticket-seg.has-photo .lbl{color:rgba(255,255,255,.9);}
@@ -370,7 +345,7 @@
   .age-banner span{font-family:'Fraunces',serif; font-weight:400; font-size:clamp(116px,32vw,200px); line-height:1; color:var(--rose);}
   .age-photo{
     position:relative; flex:0 0 auto; width:clamp(136px,38vw,210px); aspect-ratio:1/1; border-radius:50%; overflow:hidden;
-    border:4px solid var(--panel); box-shadow:0 0 0 1px var(--line), 0 18px 32px -14px var(--shadow); background:var(--panel-2);
+    border:3px solid var(--gold); box-shadow:0 0 0 6px color-mix(in srgb, var(--gold) 14%, transparent), 0 18px 32px -14px var(--shadow); background:var(--panel-2);
   }
   /* the incoming photo fades in on top; the outgoing one waits until it has
      before fading, so the circle never dips to empty in between */
