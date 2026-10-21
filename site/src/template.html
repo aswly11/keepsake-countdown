@@ -18,6 +18,18 @@
     --rose-soft:#e8b3bf;
     --line: rgba(44,26,48,0.16);
     --shadow: rgba(44,26,48,0.18);
+    /* the palette above mixed and see-through, written out as plain colors
+       rather than color-mix(): older browsers (smart TVs) don't support it and
+       drop the whole declaration, which left the backdrop photo unveiled.
+       Keep these in step with the colors above. */
+    --ground-veil: rgba(246,236,221,.7);   /* --ground at 70% */
+    --panel-glass: rgba(255,250,242,.88);  /* --panel at 88% */
+    --band: rgba(239,225,203,.5);          /* --panel-2 at 50% */
+    --rose-glow: rgba(200,90,114,.14);     /* --rose at 14% */
+    --rose-deep: rgb(140,63,80);           /* --rose, 30% darker */
+    --gold-halo: rgba(169,127,52,.14);     /* --gold at 14% */
+    --tape: rgba(215,195,160,.75);         /* --gold and white, see-through */
+    --dot: rgba(44,26,48,.25);             /* --ink at 25% */
     --nav-h: 60px;
   }
 
@@ -57,7 +69,7 @@
      veiled in the page color so text stays readable; it stays put while the
      page scrolls. Oversized so the blur has no soft edges at the screen's. */
   #backdrop{position:fixed; inset:-60px; z-index:0; pointer-events:none; background:var(--ground) center/cover no-repeat; filter:blur(22px) saturate(1.1);}
-  #backdrop::after{content:""; position:absolute; inset:0; background:color-mix(in srgb, var(--ground) 70%, transparent);}
+  #backdrop::after{content:""; position:absolute; inset:0; background:var(--ground-veil);}
 
   /* ---------- ambient canvas ---------- */
   #ambient{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.55;}
@@ -68,7 +80,7 @@
     position:fixed; inset:0; z-index:300;
     display:flex; align-items:center; justify-content:center;
     background:
-      radial-gradient(ellipse at 50% 20%, color-mix(in srgb, var(--rose) 14%, transparent), transparent 55%),
+      radial-gradient(ellipse at 50% 20%, var(--rose-glow), transparent 55%),
       var(--ground);
     padding:24px;
     transition:opacity .7s ease, visibility .7s ease;
@@ -93,7 +105,7 @@
   .wax{
     width:64px; height:64px; border-radius:50%;
     margin:0 auto 20px;
-    background:radial-gradient(circle at 35% 30%, var(--rose) 0%, var(--rose) 40%, color-mix(in srgb, var(--rose) 70%, black) 100%);
+    background:radial-gradient(circle at 35% 30%, var(--rose) 0%, var(--rose) 40%, var(--rose-deep) 100%);
     display:flex; align-items:center; justify-content:center;
     color:var(--panel); font-family:'Fraunces',serif; font-size:22px; font-weight:700;
     box-shadow:0 6px 14px -4px var(--shadow);
@@ -136,7 +148,7 @@
   #site-nav{
     position:fixed; top:0; left:0; right:0; z-index:90; height:var(--nav-h);
     display:flex; align-items:center; gap:18px; padding:0 20px;
-    background:color-mix(in srgb, var(--panel) 88%, transparent);
+    background:var(--panel-glass);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
     transform:translateY(-100%); transition:transform .5s ease;
@@ -231,7 +243,7 @@
 
   /* ---------- corkboard / gallery ---------- */
   /* see-through, so the photo backdrop carries on behind the poems */
-  #memories{background:color-mix(in srgb, var(--panel-2) 50%, transparent); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  #memories{background:var(--band); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
   .corkboard{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:34px 24px; padding-top:12px;}
   /* the first photo with the lines typed beside it (under it on phones) */
   .story-wrap{display:flex; align-items:center; justify-content:center; gap:clamp(28px,5vw,56px); max-width:880px; margin:0 auto 56px;}
@@ -321,7 +333,7 @@
   .carousel-btn.next{right:18px;}
   .carousel-dots{display:flex; justify-content:center; gap:4px; margin-top:22px;}
   .carousel-dots button{width:24px; height:24px; padding:0; border:none; background:none; display:flex; align-items:center; justify-content:center;}
-  .carousel-dots button::before{content:""; width:8px; height:8px; border-radius:50%; background:color-mix(in srgb, var(--ink) 25%, transparent); transition:background .3s, transform .3s;}
+  .carousel-dots button::before{content:""; width:8px; height:8px; border-radius:50%; background:var(--dot); transition:background .3s, transform .3s;}
   .carousel-dots button[aria-current="true"]::before{background:var(--rose); transform:scale(1.3);}
   @media (max-width:720px){
     .poem-wrap{flex-direction:column; align-items:center;}
@@ -347,7 +359,7 @@
   }
   .tape{
     position:absolute; top:-10px; left:50%; transform:translateX(-50%) rotate(-3deg);
-    width:56px; height:20px; background:color-mix(in srgb, var(--gold) 35%, white 40%);
+    width:56px; height:20px; background:var(--tape);
     opacity:.55; box-shadow:0 2px 4px rgba(0,0,0,.15);
   }
   .play-badge{
@@ -381,7 +393,7 @@
   .age-banner span{font-family:'Fraunces',serif; font-weight:400; font-size:clamp(116px,32vw,200px); line-height:1; color:var(--rose);}
   .age-photo{
     position:relative; flex:0 0 auto; width:clamp(136px,38vw,210px); aspect-ratio:1/1; border-radius:50%; overflow:hidden;
-    border:3px solid var(--gold); box-shadow:0 0 0 6px color-mix(in srgb, var(--gold) 14%, transparent), 0 18px 32px -14px var(--shadow); background:var(--panel-2);
+    border:3px solid var(--gold); box-shadow:0 0 0 6px var(--gold-halo), 0 18px 32px -14px var(--shadow); background:var(--panel-2);
   }
   /* the incoming photo fades in on top; the outgoing one waits until it has
      before fading, so the circle never dips to empty in between */
