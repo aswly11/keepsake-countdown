@@ -63,6 +63,9 @@ const pinnedFirst = [
   { file: 'letter_2.jpg', caption: "Cheek to cheek." },
   { file: 'letter_3.jpg', caption: "The same smile, twice." },
   { file: 'letter_4.jpg', caption: "Side by side." },
+  { file: 'IMG_0414.jpg', caption: "Her arms around you." },
+  { file: 'IMG_0412.jpg', caption: "A kiss for the bride." },
+  { file: 'IMG_0413.jpg', caption: "Two smiles, one day." },
   // in the carousel beside Hoda's note (الملكة علياء)
   { file: 'WhatsApp_Image_2026-10-21_at_7_52_01_PM__1_.jpg', caption: "Matching in pink." },
   { file: 'WhatsApp_Image_2026-10-21_at_7_52_01_PM.jpg', caption: "Sisters, always." },
