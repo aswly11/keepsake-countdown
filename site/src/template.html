@@ -220,9 +220,9 @@
      (invisibly) so words appear where they end up and nothing below moves. The
      cursor is an empty inline, not an inline-block, so it can't add a line
      break mid-word; its bar is drawn by ::after. */
-  #hero-line .untyped{visibility:hidden;}
-  #hero-line .cursor{position:relative;}
-  #hero-line .cursor::after{content:""; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--rose); animation:blink 1s step-start infinite;}
+  #hero-line .untyped, .letter .untyped{visibility:hidden;}
+  #hero-line .cursor, .letter .cursor{position:relative;}
+  #hero-line .cursor::after, .letter .cursor::after{content:""; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--rose); animation:blink 1s step-start infinite;}
 
   /* ---------- section headers ---------- */
   .sec-head{display:flex; flex-direction:column; gap:10px; margin-bottom:44px; text-align:center; align-items:center;}
@@ -263,6 +263,10 @@
   .bayt{margin:0 0 18px; max-width:none; font-size:inherit; line-height:2; color:inherit;}
   .bayt span{display:block;}
   .bayt span + span{text-align:end;}
+  /* a letter in prose (the last block) rather than couplets: wider, and its
+     lines free to wrap */
+  .poem.letter{max-width:24em;}
+  .letter p{margin:0 0 14px; max-width:none; font-size:inherit; line-height:2; color:inherit; text-align:center;}
   /* wide enough for the halves side by side, the way a couplet is printed.
      From 930px each column fits the longest half (فقُمْ واصنعِ الشايَ…, about
      250px), and nowrap keeps a half from ever breaking onto a second line. */
@@ -594,6 +598,29 @@
         <p class="bayt reveal"><span>قلبي عنيدٌ في هواكِ فلا يرى</span><span>إلّاكِ، أنتِ المجدُ والعَلياءُ</span></p>
       </div>
     </div>
+    <div class="poem-wrap short reveal">
+      <div class="carousel" id="carousel-letter" role="group" aria-roledescription="carousel" aria-label="Aliaa on her wedding day" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem letter" dir="rtl" lang="ar">
+        <h3>لولي ابنتي قرة العين</h3>
+        <p>كل عام وانت اروع وازهر و الي الله اقرب</p>
+        <p>العام القادم اراك أما حنونا ومربية رائعة</p>
+        <p>اعلم انه قد يكون بيننا تناقض ولكنه اقرب الي التكامل اري فيك ما يجبر بعض نقصي</p>
+        <p>اتمني لك سعادة الدارين</p>
+      </div>
+    </div>
     <div class="corkboard" id="corkboard"></div>
   </section>
 
@@ -687,6 +714,7 @@
     safeRun('story', setupStory);
     safeRun('poem', setupPoem);
     safeRun('carousels', setupCarousels);
+    safeRun('letter', setupLetter);
     safeRun('gallery', buildGallery);
     safeRun('age banner', setupAgeBanner);
     safeRun('nav', setupNav);
@@ -833,6 +861,55 @@
       }
     }
     setTimeout(type, HERO_LINE_PACE.start);
+  }
+
+  /* ================= the letter (لولي ابنتي), typed out ================= */
+  // milliseconds per character, and the pause before each new line
+  var LETTER_PACE = {type:45, line:650};
+
+  // Once the letter scrolls into view, its heading and then each line type
+  // out in turn. The text is in the markup (.letter), so it's there in full
+  // without JS or with reduced motion; the untyped rest keeps its place
+  // (invisibly), so the photo beside it never moves.
+  function setupLetter(){
+    var box = document.querySelector('.letter');
+    if(!box || reduceMotion) return;
+    var parts = Array.prototype.map.call(box.querySelectorAll('h3, p'), function(el){
+      var text = el.textContent, shown = document.createElement('span'), rest = document.createElement('span');
+      rest.className = 'untyped';
+      rest.textContent = text;
+      el.textContent = '';
+      el.appendChild(shown);
+      el.appendChild(rest);
+      return {text:text, shown:shown, rest:rest};
+    });
+    var cursor = document.createElement('span');
+    cursor.className = 'cursor';
+
+    var n = 0, i = 0;
+    function type(){
+      var part = parts[n];
+      if(i === 0) part.shown.parentNode.insertBefore(cursor, part.rest);
+      i++;
+      part.shown.textContent = part.text.slice(0, i);
+      part.rest.textContent = part.text.slice(i);
+      if(i < part.text.length){ setTimeout(type, LETTER_PACE.type); return; }
+      part.rest.remove();
+      n++; i = 0;
+      if(n < parts.length) setTimeout(type, LETTER_PACE.line);
+      else cursor.remove();
+    }
+
+    if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        if(!entries[0].isIntersecting) return;
+        io.disconnect();
+        type();
+      }, {threshold:0.4});
+      io.observe(box);
+    } else {
+      type();
+    }
   }
 
   /* ================= nav: reveal on scroll + scrollspy ================= */
@@ -1138,6 +1215,10 @@
       "photo_5944982642250335202_y.jpg",
       "IMG_20250402_002808.jpg",
       "WhatsApp_Image_2026-09-04_at_10_06_43_AM.jpg"
+    ],
+    // beside the letter that opens لولي ابنتي; more photos can be added here
+    "carousel-letter": [
+      "wedding_day_selfie.jpg"
     ]
   };
   // milliseconds each photo stays up before a carousel turns by itself

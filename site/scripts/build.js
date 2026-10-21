@@ -58,6 +58,8 @@ const pinnedFirst = [
   { file: 'gift2021_13.jpg', caption: "Smart and beautiful." },
   { file: 'gift2021_14.jpg', caption: "You and that donut." },
   { file: 'gift2021_15.jpg', caption: "Scarf season." },
+  // in the carousel beside the letter (لولي ابنتي)
+  { file: 'wedding_day_selfie.jpg', caption: "On your wedding day." },
 ];
 
 // Photos in media/compressed (and videos in media/video) that are left off the
