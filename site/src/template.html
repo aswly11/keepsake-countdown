@@ -300,6 +300,9 @@
   .polaroid .slides img.active{opacity:1;}
   /* square, for a carousel mixing landscape photos in with portrait ones */
   .carousel.square .slides{aspect-ratio:1/1;}
+  /* wide, for landscape photos (Mohamed's) */
+  .carousel.wide{width:min(400px,86vw);}
+  .carousel.wide .slides{aspect-ratio:3/2;}
   /* 32px up from the middle: the frame's bottom border is 30px deeper than its top */
   .carousel-btn{
     position:absolute; top:calc(50% - 32px); z-index:1; width:34px; height:34px; padding:0 0 3px; border-radius:50%; border:none;
@@ -701,6 +704,28 @@
         <p class="sign">— Najwa</p>
       </div>
     </div>
+    <div class="poem-wrap short reveal">
+      <div class="carousel wide" id="carousel-mohamed" role="group" aria-roledescription="carousel" aria-label="Aliaa on her wedding day" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem letter" dir="rtl" lang="ar">
+        <h3>كل عام وانتي طيبه يا اجمل لولو ف الكون</h3>
+        <p>وربنا يارب يرزقك باللي بتتمنيه يارب ويرزقكم بالذريه الصالحه ليكم ويوفقك ف حياتك يااارب يا لولاا❤️❤️🎂🎂🎂🎂🎂🎂</p>
+        <p>اختي العزيزه القمر 🎂🎂❤️❤️</p>
+        <p class="sign" dir="ltr" lang="en">— Mohamed</p>
+      </div>
+    </div>
     <div class="corkboard" id="corkboard"></div>
   </section>
 
@@ -943,7 +968,7 @@
     setTimeout(type, HERO_LINE_PACE.start);
   }
 
-  /* ================= the notes (لولي ابنتي, Hoda's, Heba's, Najwa's), typed out ================= */
+  /* ================= the notes (لولي ابنتي, Hoda's, Heba's, Najwa's, Mohamed's), typed out ================= */
   // milliseconds per character (faster for a long note), and the pause
   // before each new line
   var LETTER_PACE = {type:45, long:28, line:650};
@@ -1324,6 +1349,11 @@
       "WhatsApp_Image_2026-10-21_at_8_54_12_PM.jpg",
       "WhatsApp_Image_2026-10-21_at_8_54_16_PM.jpg",
       "WhatsApp_Image_2026-10-21_at_8_54_12_PM__1_.jpg"
+    ],
+    // beside Mohamed's note (كل عام وانتي طيبه يا اجمل لولو); landscape, so a wide frame
+    "carousel-mohamed": [
+      "IMG_0110.jpg",
+      "IMG_0106.jpg"
     ]
   };
   // milliseconds each photo stays up before a carousel turns by itself

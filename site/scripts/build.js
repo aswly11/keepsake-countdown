@@ -73,6 +73,9 @@ const pinnedFirst = [
   { file: 'WhatsApp_Image_2026-10-21_at_8_54_12_PM.jpg', caption: "Golden hour in the park." },
   { file: 'WhatsApp_Image_2026-10-21_at_8_54_16_PM.jpg', caption: "Pink and sunshine." },
   { file: 'WhatsApp_Image_2026-10-21_at_8_54_12_PM__1_.jpg', caption: "One more for luck." },
+  // in the carousel beside Mohamed's note (كل عام وانتي طيبه يا اجمل لولو)
+  { file: 'IMG_0110.jpg', caption: "A big hug." },
+  { file: 'IMG_0106.jpg', caption: "The happiest bride." },
 ];
 
 // Photos in media/compressed (and videos in media/video) that are left off the
