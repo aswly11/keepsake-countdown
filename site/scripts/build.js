@@ -63,6 +63,9 @@ const pinnedFirst = [
   { file: 'letter_2.jpg', caption: "Cheek to cheek." },
   { file: 'letter_3.jpg', caption: "The same smile, twice." },
   { file: 'letter_4.jpg', caption: "Side by side." },
+  // in the carousel beside Hoda's note (الملكة علياء)
+  { file: 'WhatsApp_Image_2026-10-21_at_7_52_01_PM__1_.jpg', caption: "Matching in pink." },
+  { file: 'WhatsApp_Image_2026-10-21_at_7_52_01_PM.jpg', caption: "Sisters, always." },
 ];
 
 // Photos in media/compressed (and videos in media/video) that are left off the
@@ -78,6 +81,12 @@ const leftOut = [
   'IMG-20241123-WA0003.jpg',
   'photo_5780788018209213034_y.jpg',
   'VID-20240210-WA0014.mp4',
+  // WhatsApp originals of wedding_day_selfie.jpg and letter_2..4.jpg, in case
+  // a full resize.ps1 run ever compresses them under these names too
+  'WhatsApp_Image_2026-10-21_at_8_17_25_PM.jpg',
+  'WhatsApp_Image_2026-10-21_at_8_25_18_PM.jpg',
+  'WhatsApp_Image_2026-10-21_at_8_25_18_PM__1_.jpg',
+  'WhatsApp_Image_2026-10-21_at_8_25_18_PM__2_.jpg',
 ];
 
 function extractDate(name) {

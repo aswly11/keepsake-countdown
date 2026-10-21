@@ -1,6 +1,6 @@
 <title>Aliaa's Keepsake Box</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Amiri:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Amiri:wght@400;700&family=Noto+Color+Emoji&display=swap');
 
   /* cream, rose and gold over a blurred photo of hers (#backdrop): one light
      palette, the same whatever the device's light/dark setting, so everyone
@@ -267,6 +267,11 @@
      lines free to wrap */
   .poem.letter{max-width:24em;}
   .letter p{margin:0 0 14px; max-width:none; font-size:inherit; line-height:2; color:inherit; text-align:center;}
+  /* Hoda's note is in English, so it's set in the Latin serif, signed under it.
+     Its emoji come from Noto Color Emoji, since older systems (Windows 10)
+     have no 🫶 of their own and would show empty boxes */
+  .letter[lang="en"] p{font-family:'Fraunces','Noto Color Emoji',ui-serif,Georgia,serif;}
+  .letter .sign{margin-top:6px; font-style:italic; color:var(--ink-soft);}
   /* wide enough for the halves side by side, the way a couplet is printed.
      From 930px each column fits the longest half (فقُمْ واصنعِ الشايَ…, about
      250px), and nowrap keeps a half from ever breaking onto a second line. */
@@ -621,6 +626,27 @@
         <p>اتمني لك سعادة الدارين</p>
       </div>
     </div>
+    <div class="poem-wrap short reveal" dir="rtl">
+      <div class="carousel" id="carousel-hoda" dir="ltr" lang="en" role="group" aria-roledescription="carousel" aria-label="Aliaa and Hoda" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem letter" dir="ltr" lang="en">
+        <h3 dir="rtl" lang="ar">الملكة علياء</h3>
+        <p>My best sister happy birthday I wish you all the years and you are always my favorite🫶🏻♥️</p>
+        <p class="sign">— Hoda</p>
+      </div>
+    </div>
     <div class="corkboard" id="corkboard"></div>
   </section>
 
@@ -863,25 +889,29 @@
     setTimeout(type, HERO_LINE_PACE.start);
   }
 
-  /* ================= the letter (لولي ابنتي), typed out ================= */
+  /* ================= the notes (لولي ابنتي, Hoda's), typed out ================= */
   // milliseconds per character, and the pause before each new line
   var LETTER_PACE = {type:45, line:650};
 
-  // Once the letter scrolls into view, its heading and then each line type
-  // out in turn. The text is in the markup (.letter), so it's there in full
+  // Once a note (.letter) scrolls into view, its heading and then each line
+  // type out in turn. The text is in the markup, so it's there in full
   // without JS or with reduced motion; the untyped rest keeps its place
   // (invisibly), so the photo beside it never moves.
   function setupLetter(){
-    var box = document.querySelector('.letter');
-    if(!box || reduceMotion) return;
+    if(reduceMotion) return;
+    Array.prototype.forEach.call(document.querySelectorAll('.letter'), typeNote);
+  }
+
+  function typeNote(box){
     var parts = Array.prototype.map.call(box.querySelectorAll('h3, p'), function(el){
-      var text = el.textContent, shown = document.createElement('span'), rest = document.createElement('span');
+      // whole characters, so an emoji is never split in half while typing
+      var chars = Array.from(el.textContent), shown = document.createElement('span'), rest = document.createElement('span');
       rest.className = 'untyped';
-      rest.textContent = text;
+      rest.textContent = el.textContent;
       el.textContent = '';
       el.appendChild(shown);
       el.appendChild(rest);
-      return {text:text, shown:shown, rest:rest};
+      return {chars:chars, shown:shown, rest:rest};
     });
     var cursor = document.createElement('span');
     cursor.className = 'cursor';
@@ -891,9 +921,9 @@
       var part = parts[n];
       if(i === 0) part.shown.parentNode.insertBefore(cursor, part.rest);
       i++;
-      part.shown.textContent = part.text.slice(0, i);
-      part.rest.textContent = part.text.slice(i);
-      if(i < part.text.length){ setTimeout(type, LETTER_PACE.type); return; }
+      part.shown.textContent = part.chars.slice(0, i).join('');
+      part.rest.textContent = part.chars.slice(i).join('');
+      if(i < part.chars.length){ setTimeout(type, LETTER_PACE.type); return; }
       part.rest.remove();
       n++; i = 0;
       if(n < parts.length) setTimeout(type, LETTER_PACE.line);
@@ -1222,6 +1252,11 @@
       "letter_2.jpg",
       "letter_3.jpg",
       "letter_4.jpg"
+    ],
+    // beside Hoda's note (الملكة علياء)
+    "carousel-hoda": [
+      "WhatsApp_Image_2026-10-21_at_7_52_01_PM__1_.jpg",
+      "WhatsApp_Image_2026-10-21_at_7_52_01_PM.jpg"
     ]
   };
   // milliseconds each photo stays up before a carousel turns by itself
