@@ -272,6 +272,8 @@
      have no 🫶 of their own and would show empty boxes */
   .letter[lang="en"] p{font-family:'Fraunces','Noto Color Emoji',ui-serif,Georgia,serif;}
   .letter[lang="ar"] p{font-family:'Amiri','Noto Color Emoji',ui-serif,Georgia,serif;}
+  /* English lines inside an Arabic note (and the Latin signatures) in the Latin serif */
+  .letter p[lang="en"]{font-family:'Fraunces','Noto Color Emoji',ui-serif,Georgia,serif;}
   /* an English heading (Najwa's) in the Latin serif; Hoda's Arabic one keeps Amiri */
   .poem.letter[lang="en"] h3:not([lang="ar"]){font-family:'Fraunces',ui-serif,Georgia,serif; font-weight:600; font-size:clamp(26px,4.6vw,34px);}
   /* a long note (Heba's): smaller, and its paragraphs set right-aligned like
@@ -726,6 +728,30 @@
         <p class="sign" dir="ltr" lang="en">— Mohamed</p>
       </div>
     </div>
+    <div class="poem-wrap short reveal" dir="rtl">
+      <div class="carousel" id="carousel-salma" dir="ltr" lang="en" role="group" aria-roledescription="carousel" aria-label="Aliaa and Salma on her wedding day" hidden>
+        <div class="carousel-stack">
+          <div class="pile"></div>
+          <div class="pile"></div>
+          <figure class="polaroid carousel-photo">
+            <div class="tape"></div>
+            <div class="slides"></div>
+            <figcaption class="cap"></figcaption>
+            <button type="button" class="carousel-btn prev" aria-label="Previous photo">&#8249;</button>
+            <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+          </figure>
+        </div>
+        <div class="carousel-dots"></div>
+      </div>
+      <div class="poem letter long" dir="rtl" lang="ar">
+        <h3>لولي حبيبتي</h3>
+        <p>كل عام وانتي بخير وطيبة يا اجمل اخت جوايا كلام كتير اوي بذات لما كبرنا قربنا اكتر من بعض بقينا نفس الهزار واوقات نفس الجو انا فعلا بحبك جدا و بحب ذكائك اللي بينقظني في الاوقات الصعبة ودمك الخفيف جدا كدا كدا وببقي مبسوطة فعلا وانا جاية عندك وبقبي مرتاحة عندك جدا اه كنا بنتخانق بس احنا اخوات ومصيرنا نتصالح ربنا يوفقك في حياتك يا رب يا لولي ويسعدك يارب كدا كدا الكلام والمشاعر كتير بس انتي عارفة مش بعرف اقول كلام حلو اكتر من خمس دقائق بحبك جدا</p>
+        <p>يا ام عيون بني وحلو اوي ماشاء الله</p>
+        <p dir="ltr" lang="en">Happy birthday y lolo</p>
+        <p dir="ltr" lang="en">Hope you have a lovely day ، hope you peace in your life. Live your days in Happiness and don't think about anything that annoys you</p>
+        <p class="sign" dir="ltr" lang="en">— Salma</p>
+      </div>
+    </div>
     <div class="corkboard" id="corkboard"></div>
   </section>
 
@@ -968,7 +994,7 @@
     setTimeout(type, HERO_LINE_PACE.start);
   }
 
-  /* ================= the notes (لولي ابنتي, Hoda's, Heba's, Najwa's, Mohamed's), typed out ================= */
+  /* ================= the notes (لولي ابنتي, Hoda's, Heba's, Najwa's, Mohamed's, Salma's), typed out ================= */
   // milliseconds per character (faster for a long note), and the pause
   // before each new line
   var LETTER_PACE = {type:45, long:28, line:650};
@@ -1354,6 +1380,10 @@
     "carousel-mohamed": [
       "IMG_0110.jpg",
       "IMG_0106.jpg"
+    ],
+    // beside Salma's note (لولي حبيبتي)
+    "carousel-salma": [
+      "IMG_0392.jpg"
     ]
   };
   // milliseconds each photo stays up before a carousel turns by itself

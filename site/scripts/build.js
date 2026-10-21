@@ -76,6 +76,8 @@ const pinnedFirst = [
   // in the carousel beside Mohamed's note (كل عام وانتي طيبه يا اجمل لولو)
   { file: 'IMG_0110.jpg', caption: "A big hug." },
   { file: 'IMG_0106.jpg', caption: "The happiest bride." },
+  // in the carousel beside Salma's note (لولي حبيبتي)
+  { file: 'IMG_0392.jpg', caption: "The bride and her sister." },
 ];
 
 // Photos in media/compressed (and videos in media/video) that are left off the
