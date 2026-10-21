@@ -42,7 +42,7 @@ Open `dist/preview-birthday.html` to see it before the day.
   cd scripts
   node build.js
   ```
-  then push to `main` (the GitHub Pages site auto-updates from `docs/`) and/or re-publish `dist/artifact-fragment.html` to update the Claude Artifact link.
+  then push to `master` (GitHub Pages serves `docs/` on `master` at https://aswly11.github.io/keepsake-countdown/ and rebuilds on every push) and/or re-publish `dist/artifact-fragment.html` to update the Claude Artifact link.
 
 ## Known limitations
 
